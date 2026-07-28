@@ -1,4 +1,4 @@
-import { User, Mail, Building2, Calendar, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck, Building2, Calendar, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
 function Profile() {
@@ -12,19 +12,28 @@ function Profile() {
         <p className="mt-1 text-slate-500">View your account information.</p>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow">
-        <div className="flex flex-col items-center gap-5 border-b p-8 md:flex-row">
-          <div className="flex h-28 w-28 items-center justify-center rounded-full bg-blue-600 text-4xl font-bold text-white">
-            {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
-          </div>
+      <div className="rounded-xl bg-white shadow border border-slate-200">
+        <div className="flex flex-col items-center gap-4 border-b p-8 md:flex-row">
+          <img
+            src={
+              user?.avatar_url ||
+              "https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff"
+            }
+            alt="profile"
+            className="h-28 w-28 rounded-full border-4 border-blue-100 object-cover"
+          />
 
           <div>
-            <h2 className="text-2xl font-bold">{user?.full_name}</h2>
+            <h2 className="text-2xl font-semibold">
+              {user?.full_name || "Administrator"}
+            </h2>
 
             <p className="text-slate-500">{user?.email}</p>
 
             <span className="mt-3 inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-              Student
+              {user?.role === "super_admin"
+                ? "Super Admin"
+                : "Department Admin"}
             </span>
           </div>
         </div>
@@ -33,7 +42,7 @@ function Profile() {
           <InfoCard
             icon={<User size={20} />}
             title="Full Name"
-            value={user?.full_name}
+            value={user?.full_name || "-"}
           />
 
           <InfoCard
@@ -43,15 +52,15 @@ function Profile() {
           />
 
           <InfoCard
-            icon={<Building2 size={20} />}
-            title="Department"
-            value={user?.department_name || "-"}
-          />
-
-          <InfoCard
             icon={<ShieldCheck size={20} />}
             title="Role"
             value={user?.role || "-"}
+          />
+
+          <InfoCard
+            icon={<Building2 size={20} />}
+            title="Department"
+            value={user?.department_name || "All Departments"}
           />
 
           <InfoCard
@@ -62,12 +71,8 @@ function Profile() {
 
           <InfoCard
             icon={<Calendar size={20} />}
-            title="Joined"
-            value={
-              user?.created_at
-                ? new Date(user.created_at).toLocaleDateString()
-                : "-"
-            }
+            title="Authentication"
+            value="Google OAuth"
           />
         </div>
       </div>
@@ -78,12 +83,12 @@ function Profile() {
 function InfoCard({ icon, title, value }) {
   return (
     <div className="rounded-lg border border-slate-200 p-5">
-      <div className="mb-2 flex items-center gap-2 text-blue-600">
+      <div className="mb-3 flex items-center gap-2 text-blue-600">
         {icon}
         <span className="font-medium">{title}</span>
       </div>
 
-      <p className="text-lg font-semibold text-slate-700">{value || "-"}</p>
+      <p className="text-lg font-semibold text-slate-700">{value}</p>
     </div>
   );
 }

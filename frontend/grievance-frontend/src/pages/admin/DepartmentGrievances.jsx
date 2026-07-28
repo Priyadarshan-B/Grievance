@@ -13,13 +13,14 @@ function DepartmentGrievances() {
   const [status, setStatus] = useState("");
 
   const filtered = useMemo(() => {
-    return grievances.filter((g) => {
-      const keyword = search.toLowerCase();
+    const keyword = search.toLowerCase();
+    console.log(grievances);
 
+    return grievances.filter((g) => {
       const matchesSearch =
-        g.grievance_no.toLowerCase().includes(keyword) ||
-        g.title.toLowerCase().includes(keyword) ||
-        g.full_name.toLowerCase().includes(keyword);
+        (g.grievance_no ?? "").toLowerCase().includes(keyword) ||
+        (g.title ?? "").toLowerCase().includes(keyword) ||
+        (g.full_name ?? g.student_name ?? "").toLowerCase().includes(keyword);
 
       const matchesStatus = status === "" || g.status === status;
 
@@ -92,7 +93,7 @@ function DepartmentGrievances() {
               <th className="px-4 py-3 text-left">Category</th>
               <th className="px-4 py-3 text-left">Priority</th>
               <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Student</th>
+              <th className="px-4 py-3 text-left">User</th>
               <th className="px-4 py-3 text-left">Submitted</th>
               <th className="px-4 py-3 text-center">Action</th>
             </tr>
@@ -122,7 +123,7 @@ function DepartmentGrievances() {
                     <Badge status={g.status} />
                   </td>
 
-                  <td className="px-4 py-3">{g.full_name}</td>
+                  <td className="px-4 py-3">{g.full_name || g.student_name}</td>
 
                   <td className="px-4 py-3">
                     {new Date(g.submitted_at).toLocaleDateString()}

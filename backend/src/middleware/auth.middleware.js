@@ -3,23 +3,22 @@ import env from "../config/env.js";
 import pool from "../config/db.js";
 
 export const authenticate = async (req, res, next) => {
-    try {
+  try {
+    const authHeader = req.headers.authorization;
 
-        const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({
+        success: false,
+        message: "Token required.",
+      });
+    }
 
-        if (!authHeader) {
-            return res.status(401).json({
-                success: false,
-                message: "Token required."
-            });
-        }
+    const token = authHeader.replace("Bearer ", "");
 
-        const token = authHeader.replace("Bearer ", "");
+    const decoded = jwt.verify(token, env.JWT_SECRET);
 
-        const decoded = jwt.verify(token, env.JWT_SECRET);
-
-        const result = await pool.query(
-            `
+    const result = await pool.query(
+      `
             SELECT
                 id,
                 username,
@@ -30,26 +29,25 @@ export const authenticate = async (req, res, next) => {
             FROM users
             WHERE id = $1
             `,
-            [decoded.id]
-        );
+      [decoded.id],
+    );
 
-        if (result.rows.length === 0) {
-            return res.status(401).json({
-                success: false,
-                message: "User not found."
-            });
-        }
-
-        req.user = result.rows[0];
-
-        next();
-
-    } catch (err) {
-        console.log(err);
-
-        return res.status(401).json({
-            success: false,
-            message: "Invalid or expired token."
-        });
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found.",
+      });
     }
+
+    req.user = result.rows[0];
+
+    next();
+  } catch (err) {
+    console.log(err);
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token.",
+    });
+  }
 };

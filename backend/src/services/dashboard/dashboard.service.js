@@ -3,7 +3,9 @@ import pool from "../../config/db.js";
 // Convert PostgreSQL COUNT(*) strings to numbers
 const toNumber = (row) => {
   Object.keys(row).forEach((key) => {
-    row[key] = Number(row[key]);
+    if (!isNaN(row[key])) {
+      row[key] = Number(row[key]);
+    }
   });
 
   return row;
@@ -14,7 +16,7 @@ const toNumber = (row) => {
 // =========================
 
 export const getUserDashboardService = async (userId) => {
-  const result = await pool.query(
+  const summaryResult = await pool.query(
     `
         SELECT
             COUNT(*) AS total,
@@ -40,7 +42,29 @@ export const getUserDashboardService = async (userId) => {
     [userId],
   );
 
-  return toNumber(result.rows[0]);
+  const monthlyResult = await pool.query(
+    `
+    SELECT
+
+        TO_CHAR(DATE_TRUNC('month', submitted_at), 'Mon') AS month,
+
+        COUNT(*)::int AS count
+
+    FROM grievances
+
+    WHERE user_id = $1
+
+    GROUP BY DATE_TRUNC('month', submitted_at)
+
+    ORDER BY DATE_TRUNC('month', submitted_at)
+    `,
+    [userId],
+  );
+
+  return {
+    ...toNumber(summaryResult.rows[0]),
+    monthly: monthlyResult.rows,
+  };
 };
 
 // =========================
@@ -70,12 +94,13 @@ export const getDepartmentDashboardService = async (userId) => {
       closed: 0,
       rejected: 0,
       reopened: 0,
+      monthly: [],
     };
   }
 
   const departmentIds = departmentResult.rows.map((row) => row.department_id);
 
-  const result = await pool.query(
+  const summaryResult = await pool.query(
     `
         SELECT
 
@@ -105,16 +130,44 @@ export const getDepartmentDashboardService = async (userId) => {
     [departmentIds],
   );
 
-  return toNumber(result.rows[0]);
+  const monthlyResult = await pool.query(
+    `
+    SELECT
+
+        TO_CHAR(DATE_TRUNC('month', g.submitted_at), 'Mon') AS month,
+
+        COUNT(*)::int AS count
+
+    FROM grievances g
+
+    JOIN categories c
+        ON g.category_id = c.id
+
+    WHERE c.department_id = ANY($1::int[])
+
+    GROUP BY DATE_TRUNC('month', g.submitted_at)
+
+    ORDER BY DATE_TRUNC('month', g.submitted_at)
+    `,
+    [departmentIds],
+  );
+
+  return {
+    ...toNumber(summaryResult.rows[0]),
+    monthly: monthlyResult.rows,
+  };
 };
 
 // =========================
 // Super Admin Dashboard
 // =========================
 
+// =========================
+// Super Admin Dashboard
+// =========================
+
 export const getAdminDashboardService = async () => {
-  const result = await pool.query(
-    `
+  const summaryResult = await pool.query(`
         SELECT
 
             (SELECT COUNT(*) FROM users WHERE is_active = 1) AS users,
@@ -123,8 +176,10 @@ export const getAdminDashboardService = async () => {
 
             (SELECT COUNT(*) FROM categories WHERE is_active = 1) AS categories,
 
-            (SELECT COUNT(*) FROM grievances) AS grievances,
+            (SELECT COUNT(*) FROM grievances) AS total,
 
+            (SELECT COUNT(*) FROM grievances) AS grievances, 
+            
             (SELECT COUNT(*) FROM grievances WHERE status = 'submitted') AS submitted,
 
             (SELECT COUNT(*) FROM grievances WHERE status = 'assigned') AS assigned,
@@ -138,8 +193,24 @@ export const getAdminDashboardService = async () => {
             (SELECT COUNT(*) FROM grievances WHERE status = 'rejected') AS rejected,
 
             (SELECT COUNT(*) FROM grievances WHERE status = 'reopened') AS reopened
-        `,
-  );
+    `);
 
-  return toNumber(result.rows[0]);
+  const monthlyResult = await pool.query(`
+        SELECT
+
+            TO_CHAR(DATE_TRUNC('month', submitted_at), 'Mon') AS month,
+
+            COUNT(*)::int AS count
+
+        FROM grievances
+
+        GROUP BY DATE_TRUNC('month', submitted_at)
+
+        ORDER BY DATE_TRUNC('month', submitted_at)
+    `);
+
+  return {
+    ...toNumber(summaryResult.rows[0]),
+    monthly: monthlyResult.rows,
+  };
 };

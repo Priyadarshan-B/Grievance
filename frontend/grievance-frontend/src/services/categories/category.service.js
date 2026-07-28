@@ -1,7 +1,21 @@
 import api from "../../api/axios";
 
-export const getCategories = async () => {
-  const { data } = await api.get("/categories");
+export const getCategories = () =>
+    api.get("/categories");
 
-  return data;
-};
+export const getCategoryById = (id) =>
+    api.get(`/categories/${id}`);
+
+export const createCategory = (data) =>
+    api.post("/categories", data);
+
+export const updateCategory = (id, data) =>
+    api.put(`/categories/${id}`, data);
+
+export const updateCategoryStatus = (id, is_active) =>
+    api.patch(`/categories/${id}/status`, {
+        is_active,
+    });
+
+export const deleteCategory = (id) =>
+    api.delete(`/categories/${id}`);

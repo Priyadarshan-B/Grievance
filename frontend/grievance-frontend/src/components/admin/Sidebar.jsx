@@ -5,7 +5,9 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../config/supabase";
 
 const menus = [
   {
@@ -31,10 +33,30 @@ const menus = [
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { user } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error(error);
+    }
+
+    logout();
+
+    navigate("/admin/login", {
+      replace: true,
+    });
+  };
+
   return (
-    <aside className="w-64 bg-slate-900 text-white">
+    <aside className="relative w-64 bg-slate-900 text-white">
       <div className="border-b border-slate-700 p-5">
-        <h1 className="text-xl font-bold">Dept Admin</h1>
+        <h1 className="text-xl font-bold">
+          {user?.role === "super_admin" ? "Admin" : "Department Admin"}
+        </h1>
       </div>
 
       <nav className="mt-4">
@@ -58,8 +80,11 @@ function Sidebar() {
         })}
       </nav>
 
-      <div className="absolute bottom-5 w-64 px-2">
-        <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-red-600">
+      <div className="absolute bottom-5 w-full px-2">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 transition hover:bg-red-600"
+        >
           <LogOut size={20} />
           Logout
         </button>

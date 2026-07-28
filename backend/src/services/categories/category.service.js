@@ -55,16 +55,16 @@ export const createCategoryService = async (data) => {
 export const getCategoriesService = async () => {
   const result = await pool.query(
     `
-        SELECT
+SELECT
     c.id,
     c.department_id,
     d.department_name,
     c.category_name,
-    c.description
+    c.description,
+    c.is_active
 FROM categories c
 JOIN departments d
     ON c.department_id = d.id
-WHERE c.is_active = 1
 ORDER BY d.department_name, c.category_name;
         `,
   );

@@ -38,13 +38,11 @@ function MyGrievances() {
     });
   }, [grievances, search]);
 
-  const totalPages = Math.ceil(
-    filteredGrievances.length / ITEMS_PER_PAGE
-  );
+  const totalPages = Math.ceil(filteredGrievances.length / ITEMS_PER_PAGE);
 
   const paginatedGrievances = filteredGrievances.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   if (isLoading) {
@@ -83,9 +81,7 @@ function MyGrievances() {
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">
-            My Grievances
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-800">My Grievances</h1>
 
           <p className="mt-1 text-slate-500">
             View and track all grievances you have submitted.
@@ -163,13 +159,9 @@ function MyGrievances() {
                       {item.title}
                     </td>
 
-                    <td className="px-5 py-4">
-                      {item.category_name}
-                    </td>
+                    <td className="px-5 py-4">{item.category_name}</td>
 
-                    <td className="px-5 py-4">
-                      {item.department_name || "-"}
-                    </td>
+                    <td className="px-5 py-4">{item.department_name || "-"}</td>
 
                     <td className="px-5 py-4">
                       <Badge status={item.status} />
@@ -177,15 +169,13 @@ function MyGrievances() {
 
                     <td className="px-5 py-4">
                       {item.submitted_at
-                        ? new Date(
-                            item.submitted_at
-                          ).toLocaleDateString()
+                        ? new Date(item.submitted_at).toLocaleDateString()
                         : "-"}
                     </td>
 
                     <td className="px-5 py-4 text-center">
                       <Link
-                        to={`/grievances/${item.id}`}
+                        to={`/user/grievances/${item.id}`}
                         className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
                       >
                         <Eye size={16} />
@@ -207,9 +197,7 @@ function MyGrievances() {
                 className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
               >
                 <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-slate-800">
-                    {item.title}
-                  </h3>
+                  <h3 className="font-semibold text-slate-800">{item.title}</h3>
 
                   <Badge status={item.status} />
                 </div>
@@ -228,15 +216,13 @@ function MyGrievances() {
                   <p>
                     <span className="font-medium">Submitted:</span>{" "}
                     {item.submitted_at
-                      ? new Date(
-                          item.submitted_at
-                        ).toLocaleDateString()
+                      ? new Date(item.submitted_at).toLocaleDateString()
                       : "-"}
                   </p>
                 </div>
 
                 <Link
-                  to={`/grievances/${item.id}`}
+                  to={`/user/grievances/${item.id}`}
                   className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
                 >
                   <Eye size={16} />

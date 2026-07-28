@@ -10,30 +10,43 @@ function useDepartmentGrievanceActions() {
   const [loading, setLoading] = useState(false);
 
   const review = async (id, remarks) => {
-    setLoading(true);
-
     try {
-      await reviewGrievance(id, { remarks });
+      setLoading(true);
+
+      const response = await reviewGrievance(id, {
+        remarks,
+      });
+
+      return response.data;
     } finally {
       setLoading(false);
     }
   };
 
   const resolve = async (id, remarks) => {
-    setLoading(true);
-
     try {
-      await resolveGrievance(id, { remarks });
+      setLoading(true);
+
+      const response = await resolveGrievance(id, {
+        remarks,
+        resolution: remarks,
+      });
+
+      return response.data;
     } finally {
       setLoading(false);
     }
   };
 
   const reject = async (id, remarks) => {
-    setLoading(true);
-
     try {
-      await rejectGrievance(id, { remarks });
+      setLoading(true);
+
+      const response = await rejectGrievance(id, {
+        remarks,
+      });
+
+      return response.data;
     } finally {
       setLoading(false);
     }

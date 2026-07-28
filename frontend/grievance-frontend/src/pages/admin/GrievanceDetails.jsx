@@ -6,8 +6,8 @@ import useDepartmentGrievanceActions from "../../hooks/useDepartmentGrievanceAct
 
 import Loader from "../../components/common/Loader";
 import Badge from "../../components/common/Badge";
-import AttachmentList from "../../components/attachments/AttachmentList";
-import HistoryTimeline from "../../components/history/HistoryTimeline";
+import AttachmentList from "../../components/grievance/AttachmentList";
+import HistoryTimeline from "../../components/grievance/HistoryTimeline";
 
 function GrievanceDetails() {
   const { id } = useParams();
@@ -39,25 +39,59 @@ function GrievanceDetails() {
   }
 
   const details = grievance?.data?.grievance;
-  const attachments = grievance?.data?.attachments || [];
-  const history = grievance?.data?.history || [];
+  const attachments = grievance?.data?.attachments ?? [];
+  const history = grievance?.data?.history ?? [];
+  console.log("Grievance Object:", grievance);
+  console.log("Details:", details);
+  if (!details) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader />
+      </div>
+    );
+  }
 
   const handleReview = async () => {
-    await review(id, remarks);
-    setRemarks("");
-    refresh();
+    try {
+      await review(id, {
+        remarks,
+      });
+
+      setRemarks("");
+
+      await refresh();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to update grievance.");
+    }
   };
 
   const handleResolve = async () => {
-    await resolve(id, remarks);
-    setRemarks("");
-    refresh();
+    try {
+      await resolve(id, {
+        remarks,
+        resolution: remarks,
+      });
+
+      setRemarks("");
+
+      await refresh();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to resolve grievance.");
+    }
   };
 
   const handleReject = async () => {
-    await reject(id, remarks);
-    setRemarks("");
-    refresh();
+    try {
+      await reject(id, {
+        remarks,
+      });
+
+      setRemarks("");
+
+      await refresh();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to reject grievance.");
+    }
   };
 
   return (

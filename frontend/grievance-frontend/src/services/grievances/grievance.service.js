@@ -40,7 +40,7 @@ export const deleteGrievance = async (id) => {
 };
 
 export const getDepartmentGrievances = () =>
-    api.get("/grievances/department");
+    api.get("/grievances");
 
 export const reviewGrievance = (id, data) =>
     api.put(`/grievances/${id}/review`, data);

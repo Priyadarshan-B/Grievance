@@ -6,20 +6,31 @@ import AdminRoute from "./AdminRoute";
 
 import Login from "../pages/auth/Login";
 import AdminLogin from "../pages/auth/AdminLogin";
+import AdminAuthCallback from "../pages/auth/AdminAuthCallback";
 
 import UserLayout from "../layouts/UserLayout";
+import AdminLayout from "../layouts/AdminLayout";
 
 import UserDashboard from "../pages/user/UserDashboard";
 import MyGrievances from "../pages/user/MyGrievances";
 import NewGrievance from "../pages/user/NewGrievance";
-import GrievanceDetails from "../pages/user/GrievanceDetails";
+import UserGrievanceDetails from "../pages/user/GrievanceDetails";
+import AdminGrievanceDetails from "../pages/admin/GrievanceDetails";
 import Profile from "../pages/user/Profile";
 
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import Departments from "../pages/admin/Departments";
+import Categories from "../pages/admin/Categories";
+import DepartmentGrievances from "../pages/admin/DepartmentGrievances";
+
+import AdminProfile from "../pages/admin/Profile";
+import AdminSettings from "../pages/admin/Settings";
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* Guest Routes */}
+
       <Route
         path="/login"
         element={
@@ -38,6 +49,10 @@ function AppRoutes() {
         }
       />
 
+      <Route path="/admin/auth/callback" element={<AdminAuthCallback />} />
+
+      {/* User Routes */}
+
       <Route
         path="/user"
         element={
@@ -54,19 +69,34 @@ function AppRoutes() {
 
         <Route path="grievance/new" element={<NewGrievance />} />
 
-        <Route path="grievances/:id" element={<GrievanceDetails />} />
+        <Route path="grievances/:id" element={<UserGrievanceDetails />} />
 
         <Route path="profile" element={<Profile />} />
       </Route>
 
+      {/* Admin Routes */}
+
       <Route
-        path="/admin/dashboard"
+        path="/admin"
         element={
           <AdminRoute>
-            <AdminDashboard />
+            <AdminLayout />
           </AdminRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="dashboard" replace />} />
+
+        <Route path="dashboard" element={<AdminDashboard />} />
+
+        <Route path="departments" element={<Departments />} />
+
+        <Route path="categories" element={<Categories />} />
+
+        <Route path="grievances" element={<DepartmentGrievances />} />
+        <Route path="grievances/:id" element={<AdminGrievanceDetails />} />
+        <Route path="profile" element={<AdminProfile />} />
+        <Route path="settings" element={<AdminSettings />} />
+      </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
 

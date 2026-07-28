@@ -25,6 +25,7 @@ import { authorize } from "../../middleware/authorize.middleware.js";
 
 const router = express.Router();
 
+// User Routes
 // Create Grievance
 router.post(
   "/",
@@ -34,9 +35,19 @@ router.post(
   createGrievance,
 );
 
-// Get Logged-in User Grievances
+// Logged-in User Grievances
 router.get("/my", authenticate, authorize("user"), getMyGrievances);
 
+// Department Admin Routes
+// Department Grievances
+router.get(
+  "/department",
+  authenticate,
+  authorize("dept_admin", "super_admin"),
+  getDepartmentGrievances,
+);
+
+// Super Admin / Department Admin Routes
 // Get All Grievances
 router.get(
   "/",
@@ -53,7 +64,7 @@ router.get(
   getGrievanceById,
 );
 
-// Update Grievance Status
+// Update Status
 router.patch(
   "/:id/status",
   authenticate,
@@ -62,7 +73,7 @@ router.patch(
   updateGrievanceStatus,
 );
 
-// Assign Grievance to Department Admin
+// Assign Department Admin
 router.patch(
   "/:id/assign",
   authenticate,
@@ -71,34 +82,31 @@ router.patch(
   assignGrievance,
 );
 
-// Delete Grievance
-router.delete("/:id", authenticate, authorize("super_admin"), deleteGrievance);
-
-router.get(
-  "/department",
-  authenticate,
-  authorize("dept_admin"),
-  getDepartmentGrievances,
-);
-
+// Review Grievance
 router.put(
   "/:id/review",
   authenticate,
-  authorize("dept_admin"),
+  authorize("dept_admin", "super_admin"),
   reviewGrievance,
 );
 
+// Resolve Grievance
 router.put(
   "/:id/resolve",
   authenticate,
-  authorize("dept_admin"),
+  authorize("dept_admin", "super_admin"),
   resolveGrievance,
 );
 
+// Reject Grievance
 router.put(
   "/:id/reject",
   authenticate,
-  authorize("dept_admin"),
+  authorize("dept_admin", "super_admin"),
   rejectGrievance,
 );
+
+// Delete Grievance
+router.delete("/:id", authenticate, authorize("super_admin"), deleteGrievance);
+
 export default router;

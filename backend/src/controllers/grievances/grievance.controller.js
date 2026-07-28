@@ -35,16 +35,21 @@ export const createGrievance = async (req, res, next) => {
   }
 };
 
-export const getGrievances = async (req, res, next) => {
+export const getGrievances = async (req, res) => {
   try {
-    const grievances = await getGrievancesService();
+    const grievances = await getGrievancesService(req.user);
 
-    res.json({
+    return res.json({
       success: true,
       data: grievances,
     });
   } catch (err) {
-    next(err);
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch grievances.",
+    });
   }
 };
 

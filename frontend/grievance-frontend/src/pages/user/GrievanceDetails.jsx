@@ -40,7 +40,7 @@ function GrievanceDetails() {
         <p className="mt-2 text-red-600">{error}</p>
 
         <Link
-          to="/my-grievances"
+          to="/user/grievances"
           className="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           Back
@@ -57,7 +57,7 @@ function GrievanceDetails() {
         </h2>
 
         <Link
-          to="/my-grievances"
+          to="/user/grievances"
           className="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           Back
@@ -81,7 +81,7 @@ function GrievanceDetails() {
       {/* Back Button */}
 
       <Link
-        to="/my-grievances"
+        to="/user/grievances"
         className="inline-flex items-center gap-2 text-blue-600 transition hover:text-blue-700"
       >
         <ArrowLeft size={18} />

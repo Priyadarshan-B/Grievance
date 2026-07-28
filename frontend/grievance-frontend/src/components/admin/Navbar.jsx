@@ -1,6 +1,14 @@
 import { Bell } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Navbar() {
+  const { user } = useAuth();
+
+  const adminName = user?.name || user?.full_name || user?.username || "Admin";
+
+  const department =
+    user?.department_name || user?.department || user?.role || "Department";
+
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-6">
       <h2 className="text-xl font-semibold">Department Admin Portal</h2>
@@ -12,12 +20,14 @@ function Navbar() {
         </button>
 
         <div className="text-right">
-          <h4 className="font-semibold">Hostel Admin</h4>
-          <p className="text-sm text-gray-500">Hostel Department</p>
+          <h4 className="font-semibold">{adminName}</h4>
+          <p className="text-sm text-gray-500">{department}</p>
         </div>
 
         <img
-          src="https://ui-avatars.com/api/?name=Hostel+Admin"
+          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+            adminName,
+          )}&background=2563eb&color=fff`}
           alt="profile"
           className="h-10 w-10 rounded-full"
         />
