@@ -17,6 +17,8 @@ import departmentAdminRoutes from "./routes/departmentAdmins/departmentAdmin.rou
 import attachmentRoutes from "./routes/attachments/attachment.routes.js";
 import historyRoutes from "./routes/history/history.routes.js";
 import dashboardRoutes from "./routes/dashboard/dashboard.routes.js";
+import adminDashboardRoutes from "./routes/admin/dashboard.routes.js";
+
 
 const app = express();
 
@@ -59,6 +61,8 @@ app.use("/api/grievances", grievanceRoutes);
 app.use("/api/department-admins", departmentAdminRoutes);
 app.use("/api/attachments", attachmentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin", adminDashboardRoutes);
 app.use("/api/history", historyRoutes);
+app.use("/uploads", express.static("uploads"));
 
 export default app;

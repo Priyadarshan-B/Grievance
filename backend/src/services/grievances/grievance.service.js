@@ -2,57 +2,50 @@ import pool from "../../config/db.js";
 
 // Generate Grievance Number
 const generateGrievanceNumber = async () => {
+  const year = new Date().getFullYear();
 
-    const year = new Date().getFullYear();
-
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         SELECT grievance_no
         FROM grievances
         ORDER BY submitted_at DESC
         LIMIT 1
-        `
-    );
+        `,
+  );
 
-    let sequence = 1;
+  let sequence = 1;
 
-    if (result.rows.length > 0) {
-        const lastNo = result.rows[0].grievance_no;
-        sequence = parseInt(lastNo.slice(-4)) + 1;
-    }
+  if (result.rows.length > 0) {
+    const lastNo = result.rows[0].grievance_no;
+    sequence = parseInt(lastNo.slice(-4)) + 1;
+  }
 
-    return `GRV-${year}-${String(sequence).padStart(4, "0")}`;
+  return `GRV-${year}-${String(sequence).padStart(4, "0")}`;
 };
 
 // Create
 export const createGrievanceService = async (data, userId) => {
+  const { category_id, title, description, priority } = data;
 
-    const {
-        category_id,
-        title,
-        description,
-        priority
-    } = data;
-
-    const category = await pool.query(
-        `
+  const category = await pool.query(
+    `
         SELECT department_id
         FROM categories
         WHERE id = $1
         `,
-        [category_id]
-    );
+    [category_id],
+  );
 
-    if (category.rows.length === 0) {
-        throw new Error("Category not found.");
-    }
+  if (category.rows.length === 0) {
+    throw new Error("Category not found.");
+  }
 
-    const department_id = category.rows[0].department_id;
+  const department_id = category.rows[0].department_id;
 
-    const grievance_no = await generateGrievanceNumber();
+  const grievance_no = await generateGrievanceNumber();
 
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         INSERT INTO grievances
         (
             grievance_no,
@@ -67,25 +60,24 @@ export const createGrievanceService = async (data, userId) => {
         ($1,$2,$3,$4,$5,$6,$7)
         RETURNING *
         `,
-        [
-            grievance_no,
-            userId,
-            department_id,
-            category_id,
-            title,
-            description,
-            priority || "medium"
-        ]
-    );
+    [
+      grievance_no,
+      userId,
+      department_id,
+      category_id,
+      title,
+      description,
+      priority || "medium",
+    ],
+  );
 
-    return result.rows[0];
+  return result.rows[0];
 };
 
 // Get All
 export const getGrievancesService = async () => {
-
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         SELECT
             g.*,
             u.full_name,
@@ -99,46 +91,110 @@ export const getGrievancesService = async () => {
         JOIN categories c
             ON g.category_id = c.id
         ORDER BY g.submitted_at DESC
-        `
-    );
+        `,
+  );
 
-    return result.rows;
+  return result.rows;
 };
 
 // Get By ID
+// Get By ID
 export const getGrievanceByIdService = async (id) => {
-
-    const result = await pool.query(
-        `
+  // ----------------------------
+  // Grievance
+  // ----------------------------
+  const grievanceResult = await pool.query(
+    `
         SELECT
             g.*,
+
             u.full_name,
+
             d.department_name,
+
             c.category_name
+
         FROM grievances g
+
         JOIN users u
             ON g.user_id = u.id
+
         JOIN departments d
             ON g.department_id = d.id
+
         JOIN categories c
             ON g.category_id = c.id
+
         WHERE g.id = $1
         `,
-        [id]
-    );
+    [id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("Grievance not found.");
-    }
+  if (grievanceResult.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
 
-    return result.rows[0];
+  // ----------------------------
+  // Attachments
+  // ----------------------------
+  const attachmentResult = await pool.query(
+    `
+        SELECT
+            id,
+            grievance_id,
+            file_name,
+            file_type,
+            file_size,
+            uploaded_by,
+            uploaded_at
+        FROM grievance_attachments
+        WHERE grievance_id = $1
+        ORDER BY uploaded_at DESC
+        `,
+    [id],
+  );
+
+  // ----------------------------
+  // History
+  // ----------------------------
+  const historyResult = await pool.query(
+    `
+        SELECT
+            gh.id,
+            gh.action,
+            gh.old_status,
+            gh.new_status,
+            gh.remarks,
+            gh.metadata,
+            gh.created_at,
+
+            u.id AS user_id,
+            u.full_name,
+            u.role
+
+        FROM grievance_history gh
+
+        LEFT JOIN users u
+            ON gh.changed_by = u.id
+
+        WHERE gh.grievance_id = $1
+
+        ORDER BY gh.created_at DESC
+        `,
+    [id],
+  );
+
+  return {
+    grievance: grievanceResult.rows[0],
+    attachments: attachmentResult.rows,
+    history: historyResult.rows,
+  };
 };
 
 // Get My Grievances
 export const getMyGrievancesService = async (userId) => {
-
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         SELECT
             g.id,
             g.title,
@@ -165,20 +221,19 @@ export const getMyGrievancesService = async (userId) => {
 
         ORDER BY g.submitted_at DESC
         `,
-        [userId]
-    );
+    [userId],
+  );
 
-    return result.rows;
+  return result.rows;
 };
 // Update Status
 export const updateGrievanceStatusService = async (
-    id,
-    status,
-    resolved_by = null
+  id,
+  status,
+  resolved_by = null,
 ) => {
-
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         UPDATE grievances
         SET
             status = $1,
@@ -187,9 +242,162 @@ export const updateGrievanceStatusService = async (
         WHERE id = $3
         RETURNING *
         `,
+    [status, resolved_by, id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
+
+  return result.rows[0];
+};
+
+// Delete
+export const deleteGrievanceService = async (id) => {
+  const result = await pool.query(
+    `
+        DELETE FROM grievances
+        WHERE id = $1
+        RETURNING id
+        `,
+    [id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
+
+  return {
+    success: true,
+  };
+};
+
+// Assign Grievance
+export const assignGrievanceService = async (grievanceId, resolved_by) => {
+  const userResult = await pool.query(
+    `
+        SELECT id, role
+        FROM users
+        WHERE id = $1
+        `,
+    [resolved_by],
+  );
+
+  if (userResult.rows.length === 0) {
+    throw new Error("Department admin not found.");
+  }
+
+  if (
+    userResult.rows[0].role !== "dept_admin" &&
+    userResult.rows[0].role !== "super_admin"
+  ) {
+    throw new Error("Invalid assignee.");
+  }
+
+  const result = await pool.query(
+    `
+        UPDATE grievances
+        SET
+            resolved_by = $1,
+            status = 'assigned',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+        RETURNING *
+        `,
+    [resolved_by, grievanceId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
+
+  return result.rows[0];
+};
+
+// Get Department Grievances
+export const getDepartmentGrievancesService = async (departmentId) => {
+  const result = await pool.query(
+    `
+        SELECT
+            g.id,
+            g.grievance_no,
+            g.title,
+            g.description,
+            g.status,
+            g.priority,
+            g.submitted_at,
+
+            u.full_name,
+
+            c.category_name,
+
+            d.department_name
+
+        FROM grievances g
+
+        JOIN users u
+            ON g.user_id = u.id
+
+        JOIN categories c
+            ON g.category_id = c.id
+
+        JOIN departments d
+            ON g.department_id = d.id
+
+        WHERE g.department_id = $1
+
+        ORDER BY g.submitted_at DESC
+        `,
+    [departmentId],
+  );
+
+  return result.rows;
+};
+
+// Review Grievance
+export const reviewGrievanceService = async (id, reviewedBy) => {
+  const result = await pool.query(
+    `
+        UPDATE grievances
+        SET
+            status = 'in_progress',
+            resolved_by = $1,
+            updated_at = NOW()
+        WHERE id = $2
+        RETURNING *
+        `,
+    [reviewedBy, id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
+
+  return result.rows[0];
+};
+
+// Resolve Grievance
+export const resolveGrievanceService = async (
+    id,
+    resolvedBy,
+    resolution
+) => {
+
+    const result = await pool.query(
+        `
+        UPDATE grievances
+        SET
+            status = 'resolved',
+            resolution = $1,
+            resolved_by = $2,
+            resolved_at = NOW(),
+            updated_at = NOW()
+        WHERE id = $3
+        RETURNING *
+        `,
         [
-            status,
-            resolved_by,
+            resolution,
+            resolvedBy,
             id
         ]
     );
@@ -201,72 +409,24 @@ export const updateGrievanceStatusService = async (
     return result.rows[0];
 };
 
-// Delete
-export const deleteGrievanceService = async (id) => {
-
-    const result = await pool.query(
-        `
-        DELETE FROM grievances
-        WHERE id = $1
-        RETURNING id
-        `,
-        [id]
-    );
-
-    if (result.rows.length === 0) {
-        throw new Error("Grievance not found.");
-    }
-
-    return {
-        success: true
-    };
-};
-
-// Assign Grievance
-export const assignGrievanceService = async (
-    grievanceId,
-    resolved_by
-) => {
-
-    const userResult = await pool.query(
-        `
-        SELECT id, role
-        FROM users
-        WHERE id = $1
-        `,
-        [resolved_by]
-    );
-
-    if (userResult.rows.length === 0) {
-        throw new Error("Department admin not found.");
-    }
-
-    if (
-        userResult.rows[0].role !== "dept_admin" &&
-        userResult.rows[0].role !== "super_admin"
-    ) {
-        throw new Error("Invalid assignee.");
-    }
-
-    const result = await pool.query(
-        `
+// Reject Grievance
+export const rejectGrievanceService = async (id, rejectedBy) => {
+  const result = await pool.query(
+    `
         UPDATE grievances
         SET
-            resolved_by = $1,
-            status = 'assigned',
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = $2
+            status='rejected',
+            resolved_by=$1,
+            updated_at=NOW()
+        WHERE id=$2
         RETURNING *
         `,
-        [
-            resolved_by,
-            grievanceId
-        ]
-    );
+    [rejectedBy, id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("Grievance not found.");
-    }
+  if (result.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
 
-    return result.rows[0];
+  return result.rows[0];
 };

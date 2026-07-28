@@ -12,6 +12,7 @@ import UserLayout from "../layouts/UserLayout";
 import UserDashboard from "../pages/user/UserDashboard";
 import MyGrievances from "../pages/user/MyGrievances";
 import NewGrievance from "../pages/user/NewGrievance";
+import GrievanceDetails from "../pages/user/GrievanceDetails";
 import Profile from "../pages/user/Profile";
 
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -52,6 +53,8 @@ function AppRoutes() {
         <Route path="grievances" element={<MyGrievances />} />
 
         <Route path="grievance/new" element={<NewGrievance />} />
+
+        <Route path="grievances/:id" element={<GrievanceDetails />} />
 
         <Route path="profile" element={<Profile />} />
       </Route>

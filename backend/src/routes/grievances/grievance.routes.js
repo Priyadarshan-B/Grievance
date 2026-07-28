@@ -1,19 +1,23 @@
 import express from "express";
 
 import {
-    createGrievance,
-    getGrievances,
-    getGrievanceById,
-    getMyGrievances,
-    updateGrievanceStatus,
-    deleteGrievance,
-    assignGrievance
+  createGrievance,
+  getGrievances,
+  getGrievanceById,
+  getMyGrievances,
+  updateGrievanceStatus,
+  deleteGrievance,
+  assignGrievance,
+  getDepartmentGrievances,
+  reviewGrievance,
+  resolveGrievance,
+  rejectGrievance,
 } from "../../controllers/grievances/grievance.controller.js";
 
 import {
-    validateCreateGrievance,
-    validateUpdateStatus,
-    validateAssignGrievance
+  validateCreateGrievance,
+  validateUpdateStatus,
+  validateAssignGrievance,
 } from "../../validators/grievances/grievance.validator.js";
 
 import { authenticate } from "../../middleware/auth.middleware.js";
@@ -23,61 +27,78 @@ const router = express.Router();
 
 // Create Grievance
 router.post(
-    "/",
-    authenticate,
-    authorize("user"),
-    validateCreateGrievance,
-    createGrievance
+  "/",
+  authenticate,
+  authorize("user"),
+  validateCreateGrievance,
+  createGrievance,
 );
 
 // Get Logged-in User Grievances
-router.get(
-    "/my",
-    authenticate,
-    authorize("user"),
-    getMyGrievances
-);
+router.get("/my", authenticate, authorize("user"), getMyGrievances);
 
 // Get All Grievances
 router.get(
-    "/",
-    authenticate,
-    authorize("dept_admin", "super_admin"),
-    getGrievances
+  "/",
+  authenticate,
+  authorize("dept_admin", "super_admin"),
+  getGrievances,
 );
 
 // Get Grievance By ID
 router.get(
-    "/:id",
-    authenticate,
-    authorize("user", "dept_admin", "super_admin"),
-    getGrievanceById
+  "/:id",
+  authenticate,
+  authorize("user", "dept_admin", "super_admin"),
+  getGrievanceById,
 );
 
 // Update Grievance Status
 router.patch(
-    "/:id/status",
-    authenticate,
-    authorize("dept_admin", "super_admin"),
-    validateUpdateStatus,
-    updateGrievanceStatus
+  "/:id/status",
+  authenticate,
+  authorize("dept_admin", "super_admin"),
+  validateUpdateStatus,
+  updateGrievanceStatus,
 );
 
 // Assign Grievance to Department Admin
 router.patch(
-    "/:id/assign",
-    authenticate,
-    authorize("super_admin"),
-    validateAssignGrievance,
-    assignGrievance
+  "/:id/assign",
+  authenticate,
+  authorize("super_admin"),
+  validateAssignGrievance,
+  assignGrievance,
 );
 
 // Delete Grievance
-router.delete(
-    "/:id",
-    authenticate,
-    authorize("super_admin"),
-    deleteGrievance
+router.delete("/:id", authenticate, authorize("super_admin"), deleteGrievance);
+
+router.get(
+  "/department",
+  authenticate,
+  authorize("dept_admin"),
+  getDepartmentGrievances,
 );
 
+router.put(
+  "/:id/review",
+  authenticate,
+  authorize("dept_admin"),
+  reviewGrievance,
+);
+
+router.put(
+  "/:id/resolve",
+  authenticate,
+  authorize("dept_admin"),
+  resolveGrievance,
+);
+
+router.put(
+  "/:id/reject",
+  authenticate,
+  authorize("dept_admin"),
+  rejectGrievance,
+);
 export default router;
