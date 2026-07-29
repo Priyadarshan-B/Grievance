@@ -168,7 +168,88 @@ function GrievanceDetails() {
 
             <AttachmentList attachments={attachments} />
           </div>
+          <div className="bg-white rounded-xl shadow border p-6 mt-6">
+            <h2 className="text-xl font-semibold mb-6"> AI Analysis</h2>
 
+            <div className="grid md:grid-cols-2 gap-5">
+              <div>
+                <p className="text-sm text-gray-500">Summary</p>
+
+                <p className="mt-1">{details.summary}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Verdict</p>
+
+                <span
+                  className={`inline-flex px-3 py-1 rounded-full text-sm font-medium
+                ${
+                  details.verdict === "GENUINE"
+                    ? "bg-green-100 text-green-700"
+                    : details.verdict === "QUESTIONABLE"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                }`}
+                >
+                  {details.verdict}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Spam Score</p>
+
+                <h3 className="text-2xl font-bold">{details.spam_score}%</h3>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Abuse Score</p>
+
+                <h3 className="text-2xl font-bold">{details.abuse_score}%</h3>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Legitimacy</p>
+
+                <h3 className="text-2xl font-bold text-green-600">
+                  {details.legitimacy_score}%
+                </h3>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Sentiment</p>
+
+                <h3 className="text-lg font-semibold">{details.sentiment}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow border p-6 mt-6">
+            <h2 className="font-semibold text-xl mb-6">👤 User Trust</h2>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              <div>
+                <p className="text-gray-500">Trust Score</p>
+
+                <h1 className="text-4xl font-bold">{details.trust_score}</h1>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Warnings</p>
+
+                <h1 className="text-4xl font-bold text-yellow-600">
+                  {details.warning_count}
+                </h1>
+              </div>
+
+              <div>
+                <p className="text-gray-500">AI Flags</p>
+
+                <h1 className="text-4xl font-bold text-red-600">
+                  {details.ai_flag_count}
+                </h1>
+              </div>
+            </div>
+          </div>
           <div className="rounded-xl bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-semibold">Remarks</h2>
 

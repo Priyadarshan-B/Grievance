@@ -18,6 +18,7 @@ import attachmentRoutes from "./routes/attachments/attachment.routes.js";
 import historyRoutes from "./routes/history/history.routes.js";
 import dashboardRoutes from "./routes/dashboard/dashboard.routes.js";
 import adminDashboardRoutes from "./routes/admin/dashboard.routes.js";
+import aiRoutes from "./routes/ai/ai.routes.js";
 
 
 const app = express();
@@ -63,6 +64,7 @@ app.use("/api/attachments", attachmentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin", adminDashboardRoutes);
 app.use("/api/history", historyRoutes);
+app.use("/api/ai", aiRoutes);
 app.use("/uploads", express.static("uploads"));
 
 export default app;

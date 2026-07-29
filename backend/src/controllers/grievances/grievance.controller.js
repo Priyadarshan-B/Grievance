@@ -14,21 +14,25 @@ import {
 
 import { addHistory } from "../../services/history/history.service.js";
 
+// =========================
+// Create Grievance
+// =========================
 export const createGrievance = async (req, res, next) => {
   try {
-    const grievance = await createGrievanceService(req.body, req.user.id);
+    const result = await createGrievanceService(req.body, req.user.id);
 
     await addHistory({
-      grievanceId: grievance.id,
+      grievanceId: result.grievance.id,
       changedBy: req.user.id,
       action: "GRIEVANCE_CREATED",
+      newStatus: result.grievance.status,
       remarks: "Grievance submitted.",
     });
 
     res.status(201).json({
       success: true,
       message: "Grievance submitted successfully.",
-      data: grievance,
+      data: result,
     });
   } catch (err) {
     next(err);
@@ -197,6 +201,7 @@ export const resolveGrievance = async (req, res, next) => {
     next(err);
   }
 };
+
 export const rejectGrievance = async (req, res, next) => {
   try {
     const grievance = await rejectGrievanceService(req.params.id, req.user.id);

@@ -6,53 +6,33 @@ import { authorize } from "../middleware/authorize.middleware.js";
 import { validateCreateUser } from "../validators/user.validator.js";
 
 import {
-    createUser,
-    getUsers,
-    getUserById,
-    updateUser,
-    updateStatus,
-    deleteUser
+  createUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  updateStatus,
+  deleteUser,
+  getMyProfile,
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
 router.use(authenticate);
 
-router.post(
-    "/",
-    authorize("super_admin"),
-    validateCreateUser,
-    createUser
-);
+// Logged-in user's profile
+router.get("/me", getMyProfile);
 
-router.get(
-    "/",
-    authorize("super_admin"),
-    getUsers
-);
+// Super Admin routes
+router.post("/", authorize("super_admin"), validateCreateUser, createUser);
 
-router.get(
-    "/:id",
-    authorize("super_admin"),
-    getUserById
-);
+router.get("/", authorize("super_admin"), getUsers);
 
-router.put(
-    "/:id",
-    authorize("super_admin"),
-    updateUser
-);
+router.get("/:id", authorize("super_admin"), getUserById);
 
-router.patch(
-    "/:id/status",
-    authorize("super_admin"),
-    updateStatus
-);
+router.put("/:id", authorize("super_admin"), updateUser);
 
-router.delete(
-    "/:id",
-    authorize("super_admin"),
-    deleteUser
-);
+router.patch("/:id/status", authorize("super_admin"), updateStatus);
+
+router.delete("/:id", authorize("super_admin"), deleteUser);
 
 export default router;

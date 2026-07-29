@@ -1,42 +1,71 @@
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-
   const [token, setToken] = useState(null);
-
   const [mode, setMode] = useState(null);
-
   const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async (authToken = token) => {
+    if (!authToken) return;
+
+    try {
+      const res = await axios.get(`${API_URL}/users/me`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      const profile = res.data.data;
+
+      setUser(profile);
+      localStorage.setItem("user", JSON.stringify(profile));
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+
+      logout();
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
     const storedMode = localStorage.getItem("mode");
+    const storedUser = localStorage.getItem("user");
 
     if (storedToken) {
       setToken(storedToken);
-
       setMode(storedMode);
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
-    }
 
-    setLoading(false);
+      fetchProfile(storedToken).finally(() => {
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  const login = ({ token, user, mode }) => {
+  const login = async ({ token, user, mode }) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("mode", mode);
 
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+    }
+
     setToken(token);
-    setUser(user);
     setMode(mode);
+
+    await fetchProfile(token);
   };
 
   const logout = () => {
@@ -58,6 +87,7 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
+        fetchProfile,
       }}
     >
       {children}

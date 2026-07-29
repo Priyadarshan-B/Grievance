@@ -1,4 +1,8 @@
 import pool from "../../config/db.js";
+import { analyzeGrievance } from "../ai/ai.service.js";
+import { saveAIAnalysis } from "../ai/saveAIAnalysis.js";
+import { updateTrustScore } from "../ai/trust.service.js";
+import { checkDuplicateGrievance } from "../ai/duplicate.service.js";
 
 // Generate Grievance Number
 const generateGrievanceNumber = async () => {
@@ -43,23 +47,30 @@ export const createGrievanceService = async (data, userId) => {
   const department_id = category.rows[0].department_id;
 
   const grievance_no = await generateGrievanceNumber();
+  const duplicate = await checkDuplicateGrievance(userId, title, description);
+
+  if (duplicate.duplicate === true && Number(duplicate.similarity) >= 95) {
+    throw new Error(
+      `Similar grievance already exists (${duplicate.grievance_no}).`,
+    );
+  }
 
   const result = await pool.query(
     `
-        INSERT INTO grievances
-        (
-            grievance_no,
-            user_id,
-            department_id,
-            category_id,
-            title,
-            description,
-            priority
-        )
-        VALUES
-        ($1,$2,$3,$4,$5,$6,$7)
-        RETURNING *
-        `,
+  INSERT INTO grievances
+  (
+      grievance_no,
+      user_id,
+      department_id,
+      category_id,
+      title,
+      description,
+      priority
+  )
+  VALUES
+  ($1,$2,$3,$4,$5,$6,$7)
+  RETURNING *
+  `,
     [
       grievance_no,
       userId,
@@ -71,7 +82,29 @@ export const createGrievanceService = async (data, userId) => {
     ],
   );
 
-  return result.rows[0];
+  const grievance = result.rows[0];
+
+  // ----------------------
+  // Gemini AI Analysis
+  // ----------------------
+
+  const analysis = await analyzeGrievance(title, description);
+  console.log("Gemini Analysis:");
+console.log(JSON.stringify(analysis, null, 2));
+
+  // Save AI result
+
+  await saveAIAnalysis(grievance.id, userId, analysis);
+
+  // Update Trust Score
+
+  const trustScore = await updateTrustScore(userId, analysis);
+
+  return {
+    grievance,
+    ai: analysis,
+    trustScore,
+  };
 };
 
 // Get All
@@ -153,26 +186,40 @@ export const getGrievanceByIdService = async (id) => {
   const grievanceResult = await pool.query(
     `
         SELECT
-            g.*,
+    g.*,
 
-            u.full_name,
+    u.full_name,
 
-            d.department_name,
+    u.trust_score,
+    u.warning_count,
+    u.ai_flag_count,
 
-            c.category_name
+    d.department_name,
 
-        FROM grievances g
+    c.category_name,
 
-        JOIN users u
-            ON g.user_id = u.id
+    ai.summary,
+    ai.sentiment,
+    ai.verdict,
+    ai.spam_score,
+    ai.abuse_score,
+    ai.legitimacy_score
 
-        JOIN departments d
-            ON g.department_id = d.id
+FROM grievances g
 
-        JOIN categories c
-            ON g.category_id = c.id
+JOIN users u
+    ON g.user_id = u.id
 
-        WHERE g.id = $1
+JOIN departments d
+    ON g.department_id = d.id
+
+JOIN categories c
+    ON g.category_id = c.id
+
+LEFT JOIN grievance_ai_analysis ai
+    ON ai.grievance_id = g.id
+
+WHERE g.id = $1
         `,
     [id],
   );

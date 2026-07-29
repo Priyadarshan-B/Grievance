@@ -7,38 +7,32 @@ import { generatePassword } from "../utils/passwordGenerator.js";
    Create User
 ========================= */
 export const createUserService = async (data) => {
+  const { full_name, email, phone, role } = data;
 
-    const {
-        full_name,
-        email,
-        phone,
-        role
-    } = data;
+  const validRoles = ["user", "dept_admin", "super_admin"];
 
-    const validRoles = ["user", "dept_admin", "super_admin"];
-
-if (!validRoles.includes(role)) {
+  if (!validRoles.includes(role)) {
     throw new Error("Invalid role.");
-}
+  }
 
-    // Check email
-    const emailExists = await pool.query(
-        "SELECT id FROM users WHERE email = $1",
-        [email]
-    );
+  // Check email
+  const emailExists = await pool.query(
+    "SELECT id FROM users WHERE email = $1",
+    [email],
+  );
 
-    if (emailExists.rows.length > 0) {
-        throw new Error("Email already exists.");
-    }
+  if (emailExists.rows.length > 0) {
+    throw new Error("Email already exists.");
+  }
 
-    const username = await generateUsername(pool);
+  const username = await generateUsername(pool);
 
-    const plainPassword = generatePassword();
+  const plainPassword = generatePassword();
 
-    const hashedPassword = await hashPassword(plainPassword);
+  const hashedPassword = await hashPassword(plainPassword);
 
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         INSERT INTO users
         (
             full_name,
@@ -63,31 +57,23 @@ if (!validRoles.includes(role)) {
             is_active,
             created_at
         `,
-        [
-            full_name,
-            email,
-            phone,
-            username,
-            hashedPassword,
-            role
-        ]
-    );
+    [full_name, email, phone, username, hashedPassword, role],
+  );
 
-    return {
-        user: result.rows[0],
-        credentials: {
-            username,
-            password: plainPassword
-        }
-    };
+  return {
+    user: result.rows[0],
+    credentials: {
+      username,
+      password: plainPassword,
+    },
+  };
 };
 
 /* =========================
    Get All Users
 ========================= */
 export const getUsersService = async () => {
-
-    const result = await pool.query(`
+  const result = await pool.query(`
         SELECT
             id,
             full_name,
@@ -102,15 +88,15 @@ export const getUsersService = async () => {
         ORDER BY created_at DESC
     `);
 
-    return result.rows;
+  return result.rows;
 };
 
 /* =========================
    Get User By ID
 ========================= */
 export const getUserByIdService = async (id) => {
-
-    const result = await pool.query(`
+  const result = await pool.query(
+    `
         SELECT
             id,
             full_name,
@@ -123,27 +109,25 @@ export const getUserByIdService = async (id) => {
             created_at
         FROM users
         WHERE id = $1
-    `, [id]);
+    `,
+    [id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("User not found.");
-    }
+  if (result.rows.length === 0) {
+    throw new Error("User not found.");
+  }
 
-    return result.rows[0];
+  return result.rows[0];
 };
 
 /* =========================
    Update User
 ========================= */
 export const updateUserService = async (id, data) => {
+  const { full_name, email, phone } = data;
 
-    const {
-        full_name,
-        email,
-        phone
-    } = data;
-
-    const result = await pool.query(`
+  const result = await pool.query(
+    `
         UPDATE users
         SET
             full_name = $1,
@@ -161,26 +145,23 @@ export const updateUserService = async (id, data) => {
             first_login,
             is_active,
             updated_at
-    `, [
-        full_name,
-        email,
-        phone,
-        id
-    ]);
+    `,
+    [full_name, email, phone, id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("User not found.");
-    }
+  if (result.rows.length === 0) {
+    throw new Error("User not found.");
+  }
 
-    return result.rows[0];
+  return result.rows[0];
 };
 
 /* =========================
    Activate / Deactivate User
 ========================= */
 export const updateStatusService = async (id, is_active) => {
-
-    const result = await pool.query(`
+  const result = await pool.query(
+    `
         UPDATE users
         SET
             is_active = $1,
@@ -190,34 +171,66 @@ export const updateStatusService = async (id, is_active) => {
             id,
             username,
             is_active
-    `, [is_active, id]);
+    `,
+    [is_active, id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("User not found.");
-    }
+  if (result.rows.length === 0) {
+    throw new Error("User not found.");
+  }
 
-    return result.rows[0];
+  return result.rows[0];
 };
 
 /* =========================
    Delete User
 ========================= */
 export const deleteUserService = async (id) => {
-
-    const result = await pool.query(
-        `
+  const result = await pool.query(
+    `
         DELETE FROM users
         WHERE id = $1
         RETURNING id
         `,
-        [id]
-    );
+    [id],
+  );
 
-    if (result.rows.length === 0) {
-        throw new Error("User not found.");
-    }
+  if (result.rows.length === 0) {
+    throw new Error("User not found.");
+  }
 
-    return {
-        success: true
-    };
+  return {
+    success: true,
+  };
+};
+
+/* =========================
+   Get Logged-in User Profile
+========================= */
+export const getMyProfileService = async (userId) => {
+  const result = await pool.query(
+    `
+        SELECT
+            id,
+            full_name,
+            email,
+            phone,
+            username,
+            role,
+            trust_score,
+            warning_count,
+            ai_flag_count,
+            is_active,
+            created_at
+        FROM users
+        WHERE id = $1
+        `,
+    [userId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("User not found.");
+  }
+
+  return result.rows[0];
 };
