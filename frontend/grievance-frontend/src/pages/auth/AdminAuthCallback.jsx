@@ -27,7 +27,7 @@ function AdminAuthCallback() {
 
         const { token, user, mode } = response.data.data;
 
-        login({
+        await login({
           token,
           user,
           mode,

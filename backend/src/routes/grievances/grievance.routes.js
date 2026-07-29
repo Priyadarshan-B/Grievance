@@ -12,6 +12,7 @@ import {
   reviewGrievance,
   resolveGrievance,
   rejectGrievance,
+  changeDepartment
 } from "../../controllers/grievances/grievance.controller.js";
 
 import {
@@ -80,6 +81,13 @@ router.patch(
   authorize("super_admin"),
   validateAssignGrievance,
   assignGrievance,
+);
+
+router.patch(
+  "/:id/change-department",
+  authenticate,
+  authorize("super_admin", "dept_admin"),
+  changeDepartment
 );
 
 // Review Grievance

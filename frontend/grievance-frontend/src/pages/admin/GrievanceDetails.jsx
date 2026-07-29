@@ -1,4 +1,7 @@
-import { useState } from "react";
+// File: frontend/src/pages/admin/GrievanceDetails.jsx
+// =========================== PART 1 ===========================
+
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import useGrievance from "../../hooks/useGrievance";
@@ -8,6 +11,11 @@ import Loader from "../../components/common/Loader";
 import Badge from "../../components/common/Badge";
 import AttachmentList from "../../components/grievance/AttachmentList";
 import HistoryTimeline from "../../components/grievance/HistoryTimeline";
+
+import {
+  changeDepartment,
+  getDepartments,
+} from "../../services/grievances/grievance.service";
 
 function GrievanceDetails() {
   const { id } = useParams();
@@ -22,7 +30,26 @@ function GrievanceDetails() {
     loading: actionLoading,
   } = useDepartmentGrievanceActions();
 
+  // Existing Remarks
   const [remarks, setRemarks] = useState("");
+
+  // Manual Department Change
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
+  const [departmentChangeReason, setDepartmentChangeReason] = useState("");
+
+  useEffect(() => {
+    const loadDepartments = async () => {
+      try {
+        const res = await getDepartments();
+        setDepartments(res.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadDepartments();
+  }, []);
 
   if (loading) {
     return (
@@ -41,8 +68,7 @@ function GrievanceDetails() {
   const details = grievance?.data?.grievance;
   const attachments = grievance?.data?.attachments ?? [];
   const history = grievance?.data?.history ?? [];
-  console.log("Grievance Object:", grievance);
-  console.log("Details:", details);
+
   if (!details) {
     return (
       <div className="flex justify-center py-20">
@@ -94,13 +120,35 @@ function GrievanceDetails() {
     }
   };
 
+  const handleDepartmentChange = async () => {
+    if (!selectedDepartmentId) {
+      return alert("Please select a department.");
+    }
+
+    try {
+      await changeDepartment(id, {
+        department_id: Number(selectedDepartmentId),
+        reason: departmentChangeReason,
+      });
+
+      alert("Department updated successfully.");
+
+      setSelectedDepartmentId("");
+      setDepartmentChangeReason("");
+
+      await refresh();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to update department.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{details.title}</h1>
 
-          <p className="text-gray-500 mt-1">{details.grievance_no}</p>
+          <p className="mt-1 text-gray-500">{details.grievance_no}</p>
         </div>
 
         <button
@@ -112,7 +160,9 @@ function GrievanceDetails() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
+          {/* ==================== DETAILS ==================== */}
+
           <div className="rounded-xl bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-semibold">Grievance Details</h2>
 
@@ -138,7 +188,7 @@ function GrievanceDetails() {
               <div>
                 <p className="text-sm text-gray-500">Priority</p>
 
-                <p className="capitalize font-medium">{details.priority}</p>
+                <p className="font-medium capitalize">{details.priority}</p>
               </div>
 
               <div>
@@ -163,15 +213,20 @@ function GrievanceDetails() {
             </div>
           </div>
 
+          {/* ==================== ATTACHMENTS ==================== */}
+
           <div className="rounded-xl bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-semibold">Attachments</h2>
 
             <AttachmentList attachments={attachments} />
           </div>
-          <div className="bg-white rounded-xl shadow border p-6 mt-6">
-            <h2 className="text-xl font-semibold mb-6"> AI Analysis</h2>
 
-            <div className="grid md:grid-cols-2 gap-5">
+          {/* ==================== AI ANALYSIS ==================== */}
+
+          <div className="rounded-xl border bg-white p-6 shadow">
+            <h2 className="mb-6 text-xl font-semibold">AI Analysis</h2>
+
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
                 <p className="text-sm text-gray-500">Summary</p>
 
@@ -182,14 +237,13 @@ function GrievanceDetails() {
                 <p className="text-sm text-gray-500">Verdict</p>
 
                 <span
-                  className={`inline-flex px-3 py-1 rounded-full text-sm font-medium
-                ${
-                  details.verdict === "GENUINE"
-                    ? "bg-green-100 text-green-700"
-                    : details.verdict === "QUESTIONABLE"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
-                }`}
+                  className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${
+                    details.verdict === "GENUINE"
+                      ? "bg-green-100 text-green-700"
+                      : details.verdict === "QUESTIONABLE"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                  }`}
                 >
                   {details.verdict}
                 </span>
@@ -220,13 +274,54 @@ function GrievanceDetails() {
 
                 <h3 className="text-lg font-semibold">{details.sentiment}</h3>
               </div>
+              <div>
+                <p className="text-sm text-gray-500">Severity Score</p>
+
+                <h3 className="text-2xl font-bold text-orange-600">
+                  {details.severity_score ?? 0}%
+                </h3>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Department Confidence</p>
+
+                <h3 className="text-lg font-semibold">
+                  {details.department_confidence ?? 0}%
+                </h3>
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-sm text-gray-500">Department Reason</p>
+
+                <div className="mt-2 rounded-lg bg-gray-50 p-3">
+                  {details.department_reason || "-"}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-sm text-gray-500">Priority Reason</p>
+
+                <div className="mt-2 rounded-lg bg-gray-50 p-3">
+                  {details.priority_reason || "-"}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-sm text-gray-500">Suggested Resolution</p>
+
+                <div className="mt-2 rounded-lg border border-green-200 bg-green-50 p-3">
+                  {details.suggested_resolution || "-"}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow border p-6 mt-6">
-            <h2 className="font-semibold text-xl mb-6">👤 User Trust</h2>
+          {/* ==================== USER TRUST ==================== */}
 
-            <div className="grid md:grid-cols-3 gap-5">
+          <div className="rounded-xl border bg-white p-6 shadow">
+            <h2 className="mb-6 text-xl font-semibold">👤 User Trust</h2>
+
+            <div className="grid gap-5 md:grid-cols-3">
               <div>
                 <p className="text-gray-500">Trust Score</p>
 
@@ -250,6 +345,48 @@ function GrievanceDetails() {
               </div>
             </div>
           </div>
+
+          {/* ==================== MANUAL DEPARTMENT CHANGE ==================== */}
+
+          <div className="rounded-xl border bg-white p-6 shadow">
+            <h2 className="mb-6 text-xl font-semibold">
+              Manual Department Change
+            </h2>
+
+            <div className="space-y-4">
+              <select
+                value={selectedDepartmentId}
+                onChange={(e) => setSelectedDepartmentId(e.target.value)}
+                className="w-full rounded-lg border p-3"
+              >
+                <option value="">Select Department</option>
+
+                {departments.map((department) => (
+                  <option key={department.id} value={department.id}>
+                    {department.department_name}
+                  </option>
+                ))}
+              </select>
+
+              <textarea
+                rows={4}
+                value={departmentChangeReason}
+                onChange={(e) => setDepartmentChangeReason(e.target.value)}
+                placeholder="Reason for changing department..."
+                className="w-full rounded-lg border p-3"
+              />
+
+              <button
+                onClick={handleDepartmentChange}
+                className="rounded-lg bg-orange-600 px-5 py-2 text-white hover:bg-orange-700"
+              >
+                Change Department
+              </button>
+            </div>
+          </div>
+
+          {/* ==================== REMARKS ==================== */}
+
           <div className="rounded-xl bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-semibold">Remarks</h2>
 
@@ -294,6 +431,8 @@ function GrievanceDetails() {
             </div>
           </div>
         </div>
+
+        {/* ==================== TIMELINE ==================== */}
 
         <div>
           <div className="rounded-xl bg-white p-6 shadow">

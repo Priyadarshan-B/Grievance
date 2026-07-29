@@ -16,7 +16,7 @@ function AdminRoute({ children }) {
     return <Navigate to="/user/dashboard" replace />;
   }
 
-  if (user?.role !== "super_admin" && user?.role !== "department_admin") {
+  if (user?.role !== "super_admin" && user?.role !== "dept_admin") {
     return <Navigate to="/login" replace />;
   }
 

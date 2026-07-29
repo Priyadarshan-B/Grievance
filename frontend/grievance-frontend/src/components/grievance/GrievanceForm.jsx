@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import useCategories from "../../hooks/useCategories";
 import { useCreateGrievance } from "../../hooks/useCreateGrievance";
 import { useUploadAttachment } from "../../hooks/useUploadAttachment";
 
@@ -19,7 +18,6 @@ function GrievanceForm() {
     formState: { errors },
   } = useForm();
 
-  const { categories, loading, error } = useCategories();
 
   const createMutation = useCreateGrievance();
   const uploadMutation = useUploadAttachment();
@@ -70,14 +68,6 @@ function GrievanceForm() {
       alert(err?.response?.data?.message || "Failed to submit grievance.");
     }
   };
-
-  if (loading) {
-    return <p>Loading categories...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
 
   return (
     <>
@@ -207,32 +197,6 @@ function GrievanceForm() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-5 rounded-lg bg-white p-6 shadow"
         >
-          {/* Category */}
-          <div>
-            <label className="mb-2 block font-medium">
-              Category
-            </label>
-
-            <select
-              {...register("category_id", {
-                required: "Category is required",
-              })}
-              className="w-full rounded-lg border px-3 py-2"
-            >
-              <option value="">Select Category</option>
-
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.department_name} - {category.category_name}
-                </option>
-              ))}
-            </select>
-
-            <p className="mt-1 text-sm text-red-500">
-              {errors.category_id?.message}
-            </p>
-          </div>
-
           {/* Title */}
           <div>
             <label className="mb-2 block font-medium">

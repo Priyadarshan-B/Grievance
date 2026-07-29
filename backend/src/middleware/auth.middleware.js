@@ -19,16 +19,20 @@ export const authenticate = async (req, res, next) => {
 
     const result = await pool.query(
       `
-            SELECT
-                id,
-                username,
-                full_name,
-                email,
-                role,
-                is_active
-            FROM users
-            WHERE id = $1
-            `,
+  SELECT
+      u.id,
+      u.username,
+      u.full_name,
+      u.email,
+      u.role,
+      u.is_active,
+      da.department_id
+  FROM users u
+  LEFT JOIN department_admins da
+      ON da.user_id = u.id
+      AND da.is_active = 1
+  WHERE u.id = $1
+  `,
       [decoded.id],
     );
 
@@ -40,6 +44,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     req.user = result.rows[0];
+    console.log("Authenticated User:", req.user);
 
     next();
   } catch (err) {

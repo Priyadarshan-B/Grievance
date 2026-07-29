@@ -13,27 +13,29 @@ const COLORS = ["#2563eb", "#f59e0b", "#ea580c", "#16a34a", "#dc2626"];
 
 function StatusPieChart({ dashboard }) {
   const data = [
-    {
-      name: "Submitted",
-      value: dashboard?.submitted ?? 0,
-    },
-    {
-      name: "Assigned",
-      value: dashboard?.assigned ?? 0,
-    },
-    {
-      name: "In Progress",
-      value: dashboard?.in_progress ?? 0,
-    },
-    {
-      name: "Resolved",
-      value: dashboard?.resolved ?? 0,
-    },
-    {
-      name: "Rejected",
-      value: dashboard?.rejected ?? 0,
-    },
-  ].filter((item) => item.value > 0);
+  {
+    name: "Submitted",
+    value: Number(dashboard?.submitted ?? 0),
+  },
+  {
+    name: "Assigned",
+    value: Number(dashboard?.assigned ?? 0),
+  },
+  {
+    name: "In Progress",
+    value: Number(dashboard?.in_progress ?? 0),
+  },
+  {
+    name: "Resolved",
+    value: Number(dashboard?.resolved ?? 0),
+  },
+  {
+    name: "Rejected",
+    value: Number(dashboard?.rejected ?? 0),
+  },
+].filter((item) => item.value > 0);
+
+console.log(data);
 
   return (
     <Card>

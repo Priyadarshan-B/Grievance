@@ -32,7 +32,7 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorize("super_admin"),
+    authorize("super_admin", "dept_admin"),
     getDepartmentAdmins
 );
 
@@ -40,8 +40,8 @@ router.get(
 router.get(
     "/department/:departmentId",
     authenticate,
-    authorize("super_admin"),
-    getDepartmentAdminsByDepartment
+    authorize("super_admin", "dept_admin"),
+    getDepartmentAdminsByDepartment 
 );
 
 // Get Departments By User

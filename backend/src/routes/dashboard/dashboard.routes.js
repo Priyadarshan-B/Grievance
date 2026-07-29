@@ -10,10 +10,10 @@ import { authorize } from "../../middleware/authorize.middleware.js";
 
 const router = express.Router();
 
-// Student Dashboard
+// User Dashboard
 router.get("/user", authenticate, authorize("user"), getUserDashboard);
 
-// Admin Dashboard (Department Admin + Super Admin)
+// Admin Dashboard
 router.get(
   "/admin",
   authenticate,

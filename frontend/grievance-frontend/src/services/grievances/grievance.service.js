@@ -50,3 +50,9 @@ export const resolveGrievance = (id, data) =>
 
 export const rejectGrievance = (id, data) =>
     api.put(`/grievances/${id}/reject`, data);
+
+export const changeDepartment = (id, payload) =>
+  api.patch(`/grievances/${id}/change-department`, payload);
+
+export const getDepartments = () =>
+  api.get("/departments");

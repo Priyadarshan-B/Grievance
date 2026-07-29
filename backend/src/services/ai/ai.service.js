@@ -1,12 +1,24 @@
 import { model } from "../../config/gemini.js";
 
-export async function analyzeGrievance(title, description) {
+export async function analyzeGrievance(title, description, departments = []) {
+  const departmentList = departments.join("\n");
+
   const prompt = `
-You are an AI grievance moderation system for a university.
+You are an AI grievance moderation, prioritization and routing system for a university.
 
-Your job is to analyze a student's grievance objectively.
+Analyze the grievance carefully.
 
-Analyze the following grievance.
+AVAILABLE DEPARTMENTS
+
+${departmentList}
+
+Rules
+
+- Choose ONLY ONE department from the above list.
+- Never invent a department.
+- Return ONLY valid JSON.
+- No markdown.
+- No explanation.
 
 Title:
 ${title}
@@ -14,94 +26,52 @@ ${title}
 Description:
 ${description}
 
-----------------------------------------------------
-SCORING RULES
-----------------------------------------------------
+Evaluate the grievance and generate:
 
-1. SPAM SCORE (0-100)
+1. department
+2. department_confidence (0-100)
+3. department_reason
 
-Give a HIGH spam score when:
+4. priority
+Choose ONLY:
+LOW
+MEDIUM
+HIGH
+CRITICAL
 
-- The complaint is a test.
-- It says "ignore this", "testing", "dummy", "sample".
-- It has meaningless or random text.
-- It does not describe any real issue.
-- It requests no action.
-- It is intentionally fake.
+5. priority_reason
 
-Examples:
+6. severity_score (0-100)
 
-"This is a test."
+Severity Guide
 
-"Ignore this complaint."
+0-20
+Very Minor
 
-"Random complaint."
+21-40
+Minor
 
-"No issue, just checking."
+41-60
+Moderate
 
-"I want to see if this works."
+61-80
+Serious
 
-Spam Score Guide
+81-100
+Critical
 
-0-20 = Genuine complaint
+7. spam_score (0-100)
 
-21-50 = Weak complaint
+8. abuse_score (0-100)
 
-51-80 = Suspicious
+9. legitimacy_score (0-100)
 
-81-100 = Definitely spam
+10. summary
+One or two sentences.
 
+11. sentiment
 
-----------------------------------------------------
-
-2. ABUSE SCORE (0-100)
-
-Increase abuse score when:
-
-- Personal insults
-- Offensive language
-- Harassment
-- Threatening language
-- Disrespectful wording
-
-Examples:
-
-"Useless staff"
-
-"Idiots"
-
-"Incompetent people"
-
-"Worst employees"
-
-A complaint may still be genuine even if it contains abusive language.
-
-
-----------------------------------------------------
-
-3. LEGITIMACY SCORE (0-100)
-
-Increase legitimacy if:
-
-- Specific issue
-- Specific location
-- Clear incident
-- Action requested
-- Real-world context
-
-Reduce legitimacy if:
-
-- Random text
-- Vague complaint
-- Testing message
-- No actionable issue
-
-
-----------------------------------------------------
-
-4. SENTIMENT
-
-Return ONLY one of:
+Choose ONLY one:
 
 Positive
 Neutral
@@ -111,64 +81,34 @@ Frustrated
 Angry
 Urgent
 
+12. verdict
 
-----------------------------------------------------
-
-5. VERDICT
-
-Return ONLY one value.
+Choose ONLY:
 
 GENUINE
 QUESTIONABLE
 SPAM
 
+13. suggested_resolution
 
-Use these rules:
+Write 2-3 sentences describing how the university should resolve the issue.
 
-GENUINE
-
-- legitimacy >= 70
-- spam <= 20
-
-QUESTIONABLE
-
-- legitimacy between 30 and 69
-OR
-- spam between 21 and 60
-
-SPAM
-
-- spam > 60
-OR
-- clearly fake/testing/random
-
-
-----------------------------------------------------
-
-6. SUMMARY
-
-Write 1-2 concise sentences summarizing the grievance.
-
-
-----------------------------------------------------
-
-IMPORTANT
-
-Return ONLY valid JSON.
-
-No markdown.
-
-No explanation.
-
-Exactly this format:
+Return ONLY this JSON:
 
 {
-  "spam_score": 0,
-  "abuse_score": 0,
-  "legitimacy_score": 100,
-  "summary": "",
-  "sentiment": "Neutral",
-  "verdict": "GENUINE"
+  "department":"",
+  "department_confidence":0,
+  "department_reason":"",
+  "priority":"MEDIUM",
+  "priority_reason":"",
+  "severity_score":50,
+  "spam_score":0,
+  "abuse_score":0,
+  "legitimacy_score":100,
+  "summary":"",
+  "sentiment":"Neutral",
+  "verdict":"GENUINE",
+  "suggested_resolution":""
 }
 `;
 
@@ -181,5 +121,26 @@ Exactly this format:
     .replace(/```/g, "")
     .trim();
 
-  return JSON.parse(cleaned);
+  const parsed = JSON.parse(cleaned);
+
+  return {
+    department: parsed.department ?? "",
+    department_confidence: parsed.department_confidence ?? 0,
+    department_reason: parsed.department_reason ?? "",
+
+    priority: parsed.priority ?? "MEDIUM",
+    priority_reason: parsed.priority_reason ?? "",
+
+    severity_score: parsed.severity_score ?? 50,
+
+    spam_score: parsed.spam_score ?? 0,
+    abuse_score: parsed.abuse_score ?? 0,
+    legitimacy_score: parsed.legitimacy_score ?? 100,
+
+    summary: parsed.summary ?? "",
+    sentiment: parsed.sentiment ?? "Neutral",
+    verdict: parsed.verdict ?? "GENUINE",
+
+    suggested_resolution: parsed.suggested_resolution ?? "",
+  };
 }

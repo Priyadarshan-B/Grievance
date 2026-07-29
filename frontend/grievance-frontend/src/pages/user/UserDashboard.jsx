@@ -78,6 +78,13 @@ function Dashboard() {
           icon={CheckCircle}
           color="bg-green-500"
         />
+
+        <StatCard
+          title="Rejected"
+          value={dashboard.rejected || 0}
+          icon={CheckCircle}
+          color="bg-red-500"
+        />
       </div>
 
       {/* Quick Actions & Resolution */}

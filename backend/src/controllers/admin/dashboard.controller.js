@@ -2,11 +2,11 @@ import { getDashboardStatsService } from "../../services/admin/dashboard.service
 
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const stats = await getDashboardStatsService();
-
-    res.json({
+    const dashboard = await getDashboardStatsService(req.user);
+    console.log(dashboard);
+    res.status(200).json({
       success: true,
-      data: stats,
+      data: dashboard,
     });
   } catch (err) {
     next(err);

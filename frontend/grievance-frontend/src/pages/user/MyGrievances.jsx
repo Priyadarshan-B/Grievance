@@ -127,9 +127,9 @@ function MyGrievances() {
                     Title
                   </th>
 
-                  <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
+                  {/* <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
                     Category
-                  </th>
+                  </th> */}
 
                   <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
                     Department
@@ -159,7 +159,7 @@ function MyGrievances() {
                       {item.title}
                     </td>
 
-                    <td className="px-5 py-4">{item.category_name}</td>
+                    {/* <td className="px-5 py-4">{item.category_name}</td> */}
 
                     <td className="px-5 py-4">{item.department_name || "-"}</td>
 
@@ -203,10 +203,10 @@ function MyGrievances() {
                 </div>
 
                 <div className="mt-4 space-y-2 text-sm text-slate-600">
-                  <p>
+                  {/* <p>
                     <span className="font-medium">Category:</span>{" "}
                     {item.category_name}
-                  </p>
+                  </p> */}
 
                   <p>
                     <span className="font-medium">Department:</span>{" "}

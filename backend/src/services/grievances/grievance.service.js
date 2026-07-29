@@ -29,24 +29,18 @@ const generateGrievanceNumber = async () => {
 
 // Create
 export const createGrievanceService = async (data, userId) => {
-  const { category_id, title, description, priority } = data;
+  const { title, description } = data;
 
-  const category = await pool.query(
-    `
-        SELECT department_id
-        FROM categories
-        WHERE id = $1
-        `,
-    [category_id],
-  );
-
-  if (category.rows.length === 0) {
-    throw new Error("Category not found.");
-  }
-
-  const department_id = category.rows[0].department_id;
+  // ------------------------------------
+  // Generate Grievance Number
+  // ------------------------------------
 
   const grievance_no = await generateGrievanceNumber();
+
+  // ------------------------------------
+  // Duplicate Check
+  // ------------------------------------
+
   const duplicate = await checkDuplicateGrievance(userId, title, description);
 
   if (duplicate.duplicate === true && Number(duplicate.similarity) >= 95) {
@@ -55,48 +49,98 @@ export const createGrievanceService = async (data, userId) => {
     );
   }
 
-  const result = await pool.query(
+  // ------------------------------------
+  // Fetch Active Departments
+  // ------------------------------------
+
+  const departmentResult = await pool.query(
     `
-  INSERT INTO grievances
-  (
+    SELECT
+      id,
+      department_name
+    FROM departments
+    WHERE is_active = 1
+    ORDER BY department_name
+    `,
+  );
+
+  const departments = departmentResult.rows;
+
+  if (departments.length === 0) {
+    throw new Error("No active departments found.");
+  }
+
+  // ------------------------------------
+  // AI Analysis
+  // ------------------------------------
+
+  const analysis = await analyzeGrievance(
+    title,
+    description,
+    departments.map((d) => d.department_name),
+  );
+
+  console.log("========== GEMINI ANALYSIS ==========");
+  console.log(JSON.stringify(analysis, null, 2));
+
+  // ------------------------------------
+  // Match Department
+  // ------------------------------------
+
+  const aiDepartment = (analysis.department || "").trim().toLowerCase();
+
+  let selectedDepartment = departments.find(
+    (d) => d.department_name.trim().toLowerCase() === aiDepartment,
+  );
+
+  if (!selectedDepartment) {
+    console.warn(`Unknown AI Department: ${analysis.department}`);
+
+    throw new Error("AI could not determine a valid department.");
+  }
+
+  const department_id = selectedDepartment.id;
+
+  // ------------------------------------
+  // Save Grievance
+  // ------------------------------------
+
+  const grievanceResult = await pool.query(
+    `
+    INSERT INTO grievances
+    (
       grievance_no,
       user_id,
       department_id,
-      category_id,
       title,
       description,
       priority
-  )
-  VALUES
-  ($1,$2,$3,$4,$5,$6,$7)
-  RETURNING *
-  `,
+    )
+    VALUES
+    ($1,$2,$3,$4,$5,$6)
+    RETURNING *
+    `,
     [
       grievance_no,
       userId,
       department_id,
-      category_id,
       title,
       description,
-      priority || "medium",
+      analysis.priority.toLowerCase(),
     ],
   );
 
-  const grievance = result.rows[0];
+  const grievance = grievanceResult.rows[0];
 
-  // ----------------------
-  // Gemini AI Analysis
-  // ----------------------
-
-  const analysis = await analyzeGrievance(title, description);
-  console.log("Gemini Analysis:");
-console.log(JSON.stringify(analysis, null, 2));
-
-  // Save AI result
+  // ------------------------------------
+  // Save AI Analysis
+  // ------------------------------------
 
   await saveAIAnalysis(grievance.id, userId, analysis);
 
+  // ------------------------------------
   // Update Trust Score
+  // ------------------------------------
 
   const trustScore = await updateTrustScore(userId, analysis);
 
@@ -106,41 +150,64 @@ console.log(JSON.stringify(analysis, null, 2));
     trustScore,
   };
 };
-
-// Get All
 export const getGrievancesService = async (user) => {
-  // Super Admin -> Get all grievances
+  // Super Admin
   if (user.role === "super_admin") {
-    const result = await pool.query(
-      `
+    const result = await pool.query(`
       SELECT
-          g.*,
-          u.full_name AS student_name,
-          d.department_name,
-          c.category_name
+        g.*,
+
+        u.full_name AS student_name,
+        d.department_name,
+
+        ai.department,
+        ai.department_confidence,
+        ai.department_reason,
+
+        ai.priority,
+        ai.priority_reason,
+
+        ai.severity_score,
+
+        ai.summary,
+        ai.sentiment,
+        ai.verdict,
+
+        ai.spam_score,
+        ai.abuse_score,
+        ai.legitimacy_score,
+
+        ai.suggested_resolution
+
       FROM grievances g
+
       JOIN users u
-          ON g.user_id = u.id
+        ON g.user_id = u.id
+
       JOIN departments d
-          ON g.department_id = d.id
-      JOIN categories c
-          ON g.category_id = c.id
+        ON g.department_id = d.id
+
+      LEFT JOIN grievance_ai_analysis ai
+        ON ai.grievance_id = g.id
+
       WHERE g.is_active = 1
-      ORDER BY g.submitted_at DESC
-      `,
-    );
+
+      ORDER BY
+        ai.severity_score DESC NULLS LAST,
+        g.submitted_at DESC
+    `);
 
     return result.rows;
   }
 
-  // Department Admin -> Find department
+  // Department Admin
   if (user.role === "dept_admin") {
     const department = await pool.query(
       `
       SELECT department_id
       FROM department_admins
-      WHERE user_id = $1
-        AND is_active = 1
+      WHERE user_id=$1
+      AND is_active=1
       `,
       [user.id],
     );
@@ -154,21 +221,48 @@ export const getGrievancesService = async (user) => {
     const result = await pool.query(
       `
       SELECT
-          g.*,
-          u.full_name AS student_name,
-          d.department_name,
-          c.category_name
+        g.*,
+
+        u.full_name AS student_name,
+        d.department_name,
+
+        ai.department,
+        ai.department_confidence,
+        ai.department_reason,
+
+        ai.priority,
+        ai.priority_reason,
+
+        ai.severity_score,
+
+        ai.summary,
+        ai.sentiment,
+        ai.verdict,
+
+        ai.spam_score,
+        ai.abuse_score,
+        ai.legitimacy_score,
+
+        ai.suggested_resolution
+
       FROM grievances g
+
       JOIN users u
-          ON g.user_id = u.id
+        ON g.user_id = u.id
+
       JOIN departments d
-          ON g.department_id = d.id
-      JOIN categories c
-          ON g.category_id = c.id
+        ON g.department_id = d.id
+
+      LEFT JOIN grievance_ai_analysis ai
+        ON ai.grievance_id = g.id
+
       WHERE
-          g.department_id = $1
-          AND g.is_active = 1
-      ORDER BY g.submitted_at DESC
+        g.department_id = $1
+        AND g.is_active = 1
+
+      ORDER BY
+        ai.severity_score DESC NULLS LAST,
+        g.submitted_at DESC
       `,
       [departmentId],
     );
@@ -178,49 +272,52 @@ export const getGrievancesService = async (user) => {
 
   return [];
 };
-// Get By ID
+
 export const getGrievanceByIdService = async (id) => {
-  // ----------------------------
-  // Grievance
-  // ----------------------------
   const grievanceResult = await pool.query(
     `
-        SELECT
-    g.*,
+    SELECT
+      g.*,
 
-    u.full_name,
+      u.full_name,
+      u.trust_score,
+      u.warning_count,
+      u.ai_flag_count,
 
-    u.trust_score,
-    u.warning_count,
-    u.ai_flag_count,
+      d.department_name,
 
-    d.department_name,
+      ai.department,
+      ai.department_confidence,
+      ai.department_reason,
 
-    c.category_name,
+      ai.priority,
+      ai.priority_reason,
 
-    ai.summary,
-    ai.sentiment,
-    ai.verdict,
-    ai.spam_score,
-    ai.abuse_score,
-    ai.legitimacy_score
+      ai.severity_score,
 
-FROM grievances g
+      ai.spam_score,
+      ai.abuse_score,
+      ai.legitimacy_score,
 
-JOIN users u
-    ON g.user_id = u.id
+      ai.summary,
+      ai.sentiment,
+      ai.verdict,
 
-JOIN departments d
-    ON g.department_id = d.id
+      ai.suggested_resolution
 
-JOIN categories c
-    ON g.category_id = c.id
+    FROM grievances g
 
-LEFT JOIN grievance_ai_analysis ai
-    ON ai.grievance_id = g.id
+    JOIN users u
+      ON g.user_id = u.id
 
-WHERE g.id = $1
-        `,
+    JOIN departments d
+      ON g.department_id = d.id
+
+    LEFT JOIN grievance_ai_analysis ai
+      ON ai.grievance_id = g.id
+
+    WHERE g.id = $1
+    `,
     [id],
   );
 
@@ -228,53 +325,47 @@ WHERE g.id = $1
     throw new Error("Grievance not found.");
   }
 
-  // ----------------------------
-  // Attachments
-  // ----------------------------
   const attachmentResult = await pool.query(
     `
-        SELECT
-            id,
-            grievance_id,
-            file_name,
-            file_type,
-            file_size,
-            uploaded_by,
-            uploaded_at
-        FROM grievance_attachments
-        WHERE grievance_id = $1
-        ORDER BY uploaded_at DESC
-        `,
+    SELECT
+      id,
+      grievance_id,
+      file_name,
+      file_type,
+      file_size,
+      uploaded_by,
+      uploaded_at
+    FROM grievance_attachments
+    WHERE grievance_id = $1
+    ORDER BY uploaded_at DESC
+    `,
     [id],
   );
 
-  // ----------------------------
-  // History
-  // ----------------------------
   const historyResult = await pool.query(
     `
-        SELECT
-            gh.id,
-            gh.action,
-            gh.old_status,
-            gh.new_status,
-            gh.remarks,
-            gh.metadata,
-            gh.created_at,
+    SELECT
+      gh.id,
+      gh.action,
+      gh.old_status,
+      gh.new_status,
+      gh.remarks,
+      gh.metadata,
+      gh.created_at,
 
-            u.id AS user_id,
-            u.full_name,
-            u.role
+      u.id AS user_id,
+      u.full_name,
+      u.role
 
-        FROM grievance_history gh
+    FROM grievance_history gh
 
-        LEFT JOIN users u
-            ON gh.changed_by = u.id
+    LEFT JOIN users u
+      ON gh.changed_by = u.id
 
-        WHERE gh.grievance_id = $1
+    WHERE gh.grievance_id = $1
 
-        ORDER BY gh.created_at DESC
-        `,
+    ORDER BY gh.created_at DESC
+    `,
     [id],
   );
 
@@ -289,32 +380,52 @@ WHERE g.id = $1
 export const getMyGrievancesService = async (userId) => {
   const result = await pool.query(
     `
-        SELECT
-            g.id,
-            g.title,
-            g.description,
-            g.status,
-            g.priority,
-            g.submitted_at,
+    SELECT
+      g.id,
+      g.grievance_no,
+      g.title,
+      g.description,
+      g.status,
+      g.priority,
+      g.submitted_at,
 
-            c.id AS category_id,
-            c.category_name,
+      d.id AS department_id,
+      d.department_name,
 
-            d.id AS department_id,
-            d.department_name
+      ai.department,
+      ai.department_confidence,
+      ai.department_reason,
 
-        FROM grievances g
+      ai.priority,
+      ai.priority_reason,
 
-        JOIN categories c
-            ON g.category_id = c.id
+      ai.severity_score,
 
-        JOIN departments d
-            ON c.department_id = d.id
+      ai.summary,
+      ai.sentiment,
+      ai.verdict,
 
-        WHERE g.user_id = $1
+      ai.spam_score,
+      ai.abuse_score,
+      ai.legitimacy_score,
 
-        ORDER BY g.submitted_at DESC
-        `,
+      ai.suggested_resolution
+
+    FROM grievances g
+
+    JOIN departments d
+      ON g.department_id = d.id
+
+    LEFT JOIN grievance_ai_analysis ai
+      ON ai.grievance_id = g.id
+
+    WHERE
+      g.user_id = $1
+      AND g.is_active = 1
+
+    ORDER BY
+      g.submitted_at DESC
+    `,
     [userId],
   );
 
@@ -408,46 +519,68 @@ export const assignGrievanceService = async (grievanceId, resolved_by) => {
   return result.rows[0];
 };
 
-// Get Department Grievances
+/// Get Department Grievances
 export const getDepartmentGrievancesService = async (departmentId) => {
   const result = await pool.query(
     `
-        SELECT
-            g.id,
-            g.grievance_no,
-            g.title,
-            g.description,
-            g.status,
-            g.priority,
-            g.submitted_at,
+    SELECT
+      g.id,
+      g.grievance_no,
+      g.title,
+      g.description,
+      g.status,
+      g.priority,
+      g.submitted_at,
 
-            u.full_name,
+      u.id AS student_id,
+      u.full_name,
 
-            c.category_name,
+      d.id AS department_id,
+      d.department_name,
 
-            d.department_name
+      ai.department,
+      ai.department_confidence,
+      ai.department_reason,
 
-        FROM grievances g
+      ai.priority,
+      ai.priority_reason,
 
-        JOIN users u
-            ON g.user_id = u.id
+      ai.severity_score,
 
-        JOIN categories c
-            ON g.category_id = c.id
+      ai.summary,
+      ai.sentiment,
+      ai.verdict,
 
-        JOIN departments d
-            ON g.department_id = d.id
+      ai.spam_score,
+      ai.abuse_score,
+      ai.legitimacy_score,
 
-        WHERE g.department_id = $1
+      ai.suggested_resolution
 
-        ORDER BY g.submitted_at DESC
-        `,
+    FROM grievances g
+
+    JOIN users u
+      ON g.user_id = u.id
+
+    JOIN departments d
+      ON g.department_id = d.id
+
+    LEFT JOIN grievance_ai_analysis ai
+      ON ai.grievance_id = g.id
+
+    WHERE
+      g.department_id = $1
+      AND g.is_active = 1
+
+    ORDER BY
+      ai.severity_score DESC NULLS LAST,
+      g.submitted_at DESC
+    `,
     [departmentId],
   );
 
   return result.rows;
 };
-
 // Review Grievance
 export const reviewGrievanceService = async (id, reviewedBy) => {
   const result = await pool.query(
@@ -514,4 +647,59 @@ export const rejectGrievanceService = async (id, rejectedBy) => {
   }
 
   return result.rows[0];
+};
+
+export const changeDepartmentService = async (
+  grievanceId,
+  departmentId,
+  changedBy,
+  reason,
+) => {
+  const grievanceResult = await pool.query(
+    `
+    SELECT *
+    FROM grievances
+    WHERE id = $1
+    `,
+    [grievanceId],
+  );
+
+  if (grievanceResult.rows.length === 0) {
+    throw new Error("Grievance not found.");
+  }
+
+  const grievance = grievanceResult.rows[0];
+
+  const departmentResult = await pool.query(
+    `
+    SELECT id
+    FROM departments
+    WHERE id = $1
+      AND is_active = 1
+    `,
+    [departmentId],
+  );
+
+  if (departmentResult.rows.length === 0) {
+    throw new Error("Department not found.");
+  }
+
+  const result = await pool.query(
+    `
+    UPDATE grievances
+    SET
+      department_id = $1,
+      updated_at = NOW()
+    WHERE id = $2
+    RETURNING *
+    `,
+    [departmentId, grievanceId],
+  );
+
+  return {
+    ...result.rows[0],
+    old_department_id: grievance.department_id,
+    changed_by: changedBy,
+    reason,
+  };
 };

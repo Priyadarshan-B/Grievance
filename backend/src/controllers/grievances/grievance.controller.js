@@ -10,6 +10,7 @@ import {
   reviewGrievanceService,
   resolveGrievanceService,
   rejectGrievanceService,
+  changeDepartmentService 
 } from "../../services/grievances/grievance.service.js";
 
 import { addHistory } from "../../services/history/history.service.js";
@@ -217,6 +218,36 @@ export const rejectGrievance = async (req, res, next) => {
     res.json({
       success: true,
       message: "Grievance rejected.",
+      data: grievance,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const changeDepartment = async (req, res, next) => {
+  try {
+    const grievance = await changeDepartmentService(
+      req.params.id,
+      req.body.department_id,
+      req.user.id,
+      req.body.reason
+    );
+
+    await addHistory({
+      grievanceId: grievance.id,
+      changedBy: req.user.id,
+      action: "DEPARTMENT_CHANGED",
+      remarks: req.body.reason || "Department changed manually.",
+      metadata: {
+        old_department: grievance.old_department_id,
+        new_department: grievance.department_id,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Department updated successfully.",
       data: grievance,
     });
   } catch (err) {

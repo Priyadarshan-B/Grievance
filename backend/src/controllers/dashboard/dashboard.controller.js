@@ -4,15 +4,12 @@ import {
   getAdminDashboardService,
 } from "../../services/dashboard/dashboard.service.js";
 
-// =========================
 // User Dashboard
-// =========================
-
 export const getUserDashboard = async (req, res, next) => {
   try {
     const dashboard = await getUserDashboardService(req.user.id);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: dashboard,
     });
@@ -21,21 +18,34 @@ export const getUserDashboard = async (req, res, next) => {
   }
 };
 
-// =========================
-// Admin Dashboard
-// =========================
-
+// Admin Dashboard (Department Admin / Super Admin)
 export const getAdminDashboard = async (req, res, next) => {
   try {
     let dashboard;
 
-    if (req.user.role === "super_admin") {
-      dashboard = await getAdminDashboardService();
-    } else {
-      dashboard = await getDepartmentDashboardService(req.user.id);
+    switch (req.user.role) {
+      case "super_admin":
+        dashboard = await getAdminDashboardService();
+        break;
+
+      case "dept_admin":
+        dashboard = await getDepartmentDashboardService(req.user.id);
+        break;
+
+      case "user":
+        return res.status(403).json({
+          success: false,
+          message: "Access denied.",
+        });
+
+      default:
+        return res.status(403).json({
+          success: false,
+          message: "Invalid role.",
+        });
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: dashboard,
     });

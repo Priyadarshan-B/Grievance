@@ -210,21 +210,32 @@ export const deleteUserService = async (id) => {
 export const getMyProfileService = async (userId) => {
   const result = await pool.query(
     `
-        SELECT
-            id,
-            full_name,
-            email,
-            phone,
-            username,
-            role,
-            trust_score,
-            warning_count,
-            ai_flag_count,
-            is_active,
-            created_at
-        FROM users
-        WHERE id = $1
-        `,
+  SELECT
+      u.id,
+      u.full_name,
+      u.email,
+      u.phone,
+      u.username,
+      u.role,
+      u.trust_score,
+      u.warning_count,
+      u.ai_flag_count,
+      u.is_active,
+      u.created_at,
+
+      d.department_name
+
+  FROM users u
+
+  LEFT JOIN department_admins da
+      ON da.user_id = u.id
+      AND da.is_active = 1
+
+  LEFT JOIN departments d
+      ON d.id = da.department_id
+
+  WHERE u.id = $1
+  `,
     [userId],
   );
 

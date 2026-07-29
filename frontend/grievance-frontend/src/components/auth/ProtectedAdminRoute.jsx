@@ -16,7 +16,7 @@ function ProtectedAdminRoute() {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (user.role !== "super_admin" && user.role !== "department_admin") {
+    if (user.role !== "super_admin" && user.role !== "dept_admin") {
       localStorage.clear();
       return <Navigate to="/admin/login" replace />;
     }

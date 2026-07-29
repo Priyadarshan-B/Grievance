@@ -237,7 +237,61 @@ function GrievanceDetails() {
 
         <AttachmentList attachments={attachments} />
       </div>
+      {/* AI Analysis */}
 
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-6 text-xl font-semibold">AI Analysis</h2>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <p className="text-sm text-slate-500">AI Summary</p>
+            <p className="mt-1">{grievanceData.summary || "-"}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Suggested Department</p>
+            <p className="mt-1">{grievanceData.department_name || "-"}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">AI Priority</p>
+            <p className="mt-1 capitalize">{grievanceData.priority || "-"}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Sentiment</p>
+            <p className="mt-1">{grievanceData.sentiment || "-"}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Legitimacy Score</p>
+            <p className="mt-1">{grievanceData.legitimacy_score ?? 0}/100</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Severity Score</p>
+            <p className="mt-1">{grievanceData.severity_score ?? 0}/100</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Spam Score</p>
+            <p className="mt-1">{grievanceData.spam_score ?? 0}/100</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate-500">Abuse Score</p>
+            <p className="mt-1">{grievanceData.abuse_score ?? 0}/100</p>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <p className="text-sm text-slate-500">Suggested Resolution</p>
+
+          <div className="mt-2 rounded-lg bg-slate-50 p-4">
+            {grievanceData.suggested_resolution || "-"}
+          </div>
+        </div>
+      </div>
       {/* History */}
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
