@@ -31,16 +31,10 @@ const generateGrievanceNumber = async () => {
 export const createGrievanceService = async (data, userId) => {
   const { title, description } = data;
 
-  // ------------------------------------
   // Generate Grievance Number
-  // ------------------------------------
-
   const grievance_no = await generateGrievanceNumber();
 
-  // ------------------------------------
   // Duplicate Check
-  // ------------------------------------
-
   const duplicate = await checkDuplicateGrievance(userId, title, description);
 
   if (duplicate.duplicate === true && Number(duplicate.similarity) >= 95) {
@@ -49,15 +43,12 @@ export const createGrievanceService = async (data, userId) => {
     );
   }
 
-  // ------------------------------------
   // Fetch Active Departments
-  // ------------------------------------
-
   const departmentResult = await pool.query(
     `
     SELECT
       id,
-      department_name
+      department_name, department_code
     FROM departments
     WHERE is_active = 1
     ORDER BY department_name
@@ -70,40 +61,39 @@ export const createGrievanceService = async (data, userId) => {
     throw new Error("No active departments found.");
   }
 
-  // ------------------------------------
   // AI Analysis
-  // ------------------------------------
 
   const analysis = await analyzeGrievance(
     title,
     description,
-    departments.map((d) => d.department_name),
+    departments.map((d) => ({
+      name: d.department_name,
+      code: d.department_code,
+    })),
   );
 
   console.log("========== GEMINI ANALYSIS ==========");
   console.log(JSON.stringify(analysis, null, 2));
 
-  // ------------------------------------
   // Match Department
-  // ------------------------------------
 
-  const aiDepartment = (analysis.department || "").trim().toLowerCase();
+  const aiDepartmentCode = (analysis.department_code || "")
+    .trim()
+    .toLowerCase();
 
-  let selectedDepartment = departments.find(
-    (d) => d.department_name.trim().toLowerCase() === aiDepartment,
+  const selectedDepartment = departments.find(
+    (d) => d.department_code.trim().toLowerCase() === aiDepartmentCode,
   );
 
   if (!selectedDepartment) {
-    console.warn(`Unknown AI Department: ${analysis.department}`);
+    console.warn(`Unknown AI Department Code: ${analysis.department_code}`);
 
     throw new Error("AI could not determine a valid department.");
   }
 
   const department_id = selectedDepartment.id;
 
-  // ------------------------------------
   // Save Grievance
-  // ------------------------------------
 
   const grievanceResult = await pool.query(
     `
@@ -132,16 +122,10 @@ export const createGrievanceService = async (data, userId) => {
 
   const grievance = grievanceResult.rows[0];
 
-  // ------------------------------------
   // Save AI Analysis
-  // ------------------------------------
-
   await saveAIAnalysis(grievance.id, userId, analysis);
 
-  // ------------------------------------
   // Update Trust Score
-  // ------------------------------------
-
   const trustScore = await updateTrustScore(userId, analysis);
 
   return {
@@ -150,6 +134,7 @@ export const createGrievanceService = async (data, userId) => {
     trustScore,
   };
 };
+
 export const getGrievancesService = async (user) => {
   // Super Admin
   if (user.role === "super_admin") {

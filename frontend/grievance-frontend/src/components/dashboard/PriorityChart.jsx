@@ -9,7 +9,12 @@ import {
 
 import Card from "../common/Card";
 
-const COLORS = ["#ef4444", "#f59e0b", "#22c55e"];
+const COLORS = {
+  CRITICAL: "#dc2626",
+  HIGH: "#f97316",
+  MEDIUM: "#3b82f6",
+  LOW: "#22c55e",
+};
 
 function PriorityChart({ data = [] }) {
   return (
@@ -26,8 +31,11 @@ function PriorityChart({ data = [] }) {
               outerRadius={95}
               label
             >
-              {data.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              {data.map((item, index) => (
+                <Cell
+                  key={index}
+                  fill={COLORS[item.priority?.toUpperCase()] || "#94a3b8"}
+                />
               ))}
             </Pie>
 

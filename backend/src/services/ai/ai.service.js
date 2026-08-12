@@ -1,24 +1,121 @@
 import { model } from "../../config/gemini.js";
 
 export async function analyzeGrievance(title, description, departments = []) {
-  const departmentList = departments.join("\n");
+  const departmentList = departments
+    .map((d) => `Department Name: ${d.name}\nDepartment Code: ${d.code}`)
+    .join("\n\n");
 
   const prompt = `
 You are an AI grievance moderation, prioritization and routing system for a university.
 
-Analyze the grievance carefully.
+Analyze the grievance carefully and determine which university department should handle it.
 
 AVAILABLE DEPARTMENTS
 
 ${departmentList}
 
-Rules
+DEPARTMENT ROUTING RULES
 
-- Choose ONLY ONE department from the above list.
-- Never invent a department.
-- Return ONLY valid JSON.
-- No markdown.
-- No explanation.
+1. Choose ONLY ONE department from the available departments.
+
+2. You MUST return a department name and department code
+   that exactly match one of the available departments.
+
+3. Users may refer to departments using:
+   - the full department name
+   - the department code
+   - abbreviations
+   - short forms
+   - informal names
+   - keywords related to the department's responsibilities
+
+4. Understand the meaning of the grievance rather than relying only
+   on exact keyword matching.
+
+5. Never invent a department or department code.
+
+6. Use the following department meanings as guidance:
+
+Academics (ACA):
+Academic-related matters such as courses, subjects, faculty, classes,
+attendance, academic regulations, teaching and learning issues.
+
+Reward Points (RP):
+Reward points, student reward points, points not credited,
+points calculation, reward-related issues.
+
+Hostel (H):
+Hostel accommodation, rooms, hostel facilities, hostel maintenance,
+food, mess, water, electricity, cleanliness, wardens and hostel-related issues.
+
+Administration (AD):
+General administrative matters, certificates, documents,
+official requests, permissions and administrative services.
+
+Personalised Skill (PS):
+Skill development programs, personalised skill activities,
+skill courses, skill assessments and related issues.
+
+Transport (TRAN):
+College buses, routes, bus timings, transportation,
+bus drivers, stops and transport-related issues.
+
+Accounts (ACC):
+Fees, payments, refunds, receipts, transactions,
+financial issues and account-related matters.
+
+Training and Placement (T/P):
+Placements, internships, companies, placement drives,
+interviews, job opportunities and training-and-placement matters.
+
+Controller of Examination (CoE):
+Examinations, exam schedules, hall tickets, marks,
+results, arrears, revaluation, exam registration,
+question papers and examination-related issues.
+
+IMPORTANT:
+A user may use a short form or informal wording.
+
+Examples:
+
+"my exam mark is wrong"
+-> Controller of Examination (CoE)
+
+"coe issue"
+-> Controller of Examination (CoE)
+
+"bus didn't come today"
+-> Transport (TRAN)
+
+"tran problem"
+-> Transport (TRAN)
+
+"hostel food is bad"
+-> Hostel (H)
+
+"rp points not updated"
+-> Reward Points (RP)
+
+"my placement interview issue"
+-> Training and Placement (T/P)
+
+"fee payment failed"
+-> Accounts (ACC)
+
+"certificate request"
+-> Administration (AD)
+
+"attendance issue"
+-> Academics (ACA)
+
+"skill course problem"
+-> Personalised Skill (PS)
+
+These examples are only guidance. Always analyze the actual grievance.
+
+Return ONLY valid JSON.
+No markdown.
+No explanation outside JSON.
 
 Title:
 ${title}
@@ -29,21 +126,30 @@ ${description}
 Evaluate the grievance and generate:
 
 1. department
-2. department_confidence (0-100)
-3. department_reason
+   Exact department name from the available departments.
 
-4. priority
-Choose ONLY:
-LOW
-MEDIUM
-HIGH
-CRITICAL
+2. department_code
+   Exact department code from the available departments.
 
-5. priority_reason
+3. department_confidence
+   Number from 0-100.
 
-6. severity_score (0-100)
+4. department_reason
+   Brief reason for selecting the department.
 
-Severity Guide
+5. priority
+   Choose ONLY:
+   LOW
+   MEDIUM
+   HIGH
+   CRITICAL
+
+6. priority_reason
+
+7. severity_score
+   Number from 0-100.
+
+Severity Guide:
 
 0-20
 Very Minor
@@ -60,16 +166,19 @@ Serious
 81-100
 Critical
 
-7. spam_score (0-100)
+8. spam_score
+   Number from 0-100.
 
-8. abuse_score (0-100)
+9. abuse_score
+   Number from 0-100.
 
-9. legitimacy_score (0-100)
+10. legitimacy_score
+    Number from 0-100.
 
-10. summary
-One or two sentences.
+11. summary
+    One or two sentences.
 
-11. sentiment
+12. sentiment
 
 Choose ONLY one:
 
@@ -81,7 +190,7 @@ Frustrated
 Angry
 Urgent
 
-12. verdict
+13. verdict
 
 Choose ONLY:
 
@@ -89,26 +198,27 @@ GENUINE
 QUESTIONABLE
 SPAM
 
-13. suggested_resolution
+14. suggested_resolution
 
 Write 2-3 sentences describing how the university should resolve the issue.
 
 Return ONLY this JSON:
 
 {
-  "department":"",
-  "department_confidence":0,
-  "department_reason":"",
-  "priority":"MEDIUM",
-  "priority_reason":"",
-  "severity_score":50,
-  "spam_score":0,
-  "abuse_score":0,
-  "legitimacy_score":100,
-  "summary":"",
-  "sentiment":"Neutral",
-  "verdict":"GENUINE",
-  "suggested_resolution":""
+  "department": "",
+  "department_code": "",
+  "department_confidence": 0,
+  "department_reason": "",
+  "priority": "MEDIUM",
+  "priority_reason": "",
+  "severity_score": 50,
+  "spam_score": 0,
+  "abuse_score": 0,
+  "legitimacy_score": 100,
+  "summary": "",
+  "sentiment": "Neutral",
+  "verdict": "GENUINE",
+  "suggested_resolution": ""
 }
 `;
 
@@ -125,6 +235,7 @@ Return ONLY this JSON:
 
   return {
     department: parsed.department ?? "",
+    department_code: parsed.department_code ?? "",
     department_confidence: parsed.department_confidence ?? 0,
     department_reason: parsed.department_reason ?? "",
 

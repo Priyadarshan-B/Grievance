@@ -50,20 +50,21 @@ export const getDashboardStatsService = async (user) => {
 
   const departmentWise = await pool.query(
     `
-    SELECT
-      d.department_name,
-      COUNT(g.id)::int AS total
+  SELECT
+    d.department_name,
+    d.department_code,
+    COUNT(g.id)::int AS total
 
-    FROM departments d
+  FROM departments d
 
-    LEFT JOIN grievances g
-      ON g.department_id=d.id
-      AND g.is_active=1
+  LEFT JOIN grievances g
+    ON g.department_id = d.id
+    AND g.is_active = 1
 
-    GROUP BY d.department_name
+  GROUP BY d.department_name, d.department_code
 
-    ORDER BY total DESC
-    `,
+  ORDER BY total DESC
+  `,
   );
 
   const priorityWise = await pool.query(
@@ -125,7 +126,7 @@ export const getDashboardStatsService = async (user) => {
   );
 
   const monthly = await pool.query(
-  `
+    `
   SELECT
     TO_CHAR(DATE_TRUNC('month', g.submitted_at), 'Mon') AS month,
     COUNT(*)::int AS count
@@ -134,15 +135,15 @@ export const getDashboardStatsService = async (user) => {
   GROUP BY DATE_TRUNC('month', g.submitted_at)
   ORDER BY DATE_TRUNC('month', g.submitted_at)
   `,
-  params
-);
+    params,
+  );
 
-return {
-  summary: summary.rows[0],
-  monthly: monthly.rows,
-  departmentWise: departmentWise.rows,
-  priorityWise: priorityWise.rows,
-  sentimentWise: sentimentWise.rows,
-  recent: recent.rows,
-};
+  return {
+    summary: summary.rows[0],
+    monthly: monthly.rows,
+    departmentWise: departmentWise.rows,
+    priorityWise: priorityWise.rows,
+    sentimentWise: sentimentWise.rows,
+    recent: recent.rows,
+  };
 };

@@ -44,7 +44,7 @@ function AdminDashboard() {
 
       <SentimentChart data={dashboard?.sentimentWise ?? []} />
 
-      <RecentGrievances grievances={dashboard?.recent ?? []} />
+      <RecentGrievances data={dashboard?.recent ?? []} />
     </div>
   );
 }

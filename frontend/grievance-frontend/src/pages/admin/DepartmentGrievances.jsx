@@ -159,7 +159,7 @@ function DepartmentGrievances() {
             <tr>
               <th className="px-4 py-3 text-left">No</th>
               <th className="px-4 py-3 text-left">Title</th>
-              <th className="px-4 py-3 text-left">Student</th>
+              {/* <th className="px-4 py-3 text-left">Student</th> */}
               <th className="px-4 py-3 text-left">Priority</th>
               <th className="px-4 py-3 text-left">Severity</th>
               <th className="px-4 py-3 text-left">Sentiment</th>
@@ -193,9 +193,9 @@ function DepartmentGrievances() {
                     {g.title}
                   </td>
 
-                  <td className="px-4 py-3">
+                  {/* <td className="px-4 py-3">
                     {g.student_name || g.full_name}
-                  </td>
+                  </td> */}
 
                   <td className="px-4 py-3">
                     <span

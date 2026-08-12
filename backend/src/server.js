@@ -10,12 +10,12 @@ async function startServer() {
 
     app.listen(env.PORT, () => {
       console.log("-------------------------------------");
-      console.log(`🚀 AI Grievance Backend Started`);
-      console.log(`🌐 http://localhost:${env.PORT}`);
+      console.log(`AI Grievance Backend Started`);
+      console.log(` http://localhost:${env.PORT}`);
       console.log("-------------------------------------");
     });
   } catch (err) {
-    console.error("❌ Failed to connect to PostgreSQL");
+    console.error(" Failed to connect to PostgreSQL");
     console.error(err);
     process.exit(1);
   }

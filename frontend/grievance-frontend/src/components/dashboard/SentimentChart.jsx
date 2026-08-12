@@ -9,7 +9,15 @@ import {
 
 import Card from "../common/Card";
 
-const COLORS = ["#22c55e", "#64748b", "#ef4444"];
+const COLORS = {
+  Positive: "#22c55e",
+  Neutral: "#64748b",
+  Negative: "#ef4444",
+  Concerned: "#eab308",
+  Frustrated: "#f97316",
+  Angry: "#b91c1c",
+  Urgent: "#7c3aed",
+};
 
 function SentimentChart({ data = [] }) {
   return (
@@ -26,8 +34,8 @@ function SentimentChart({ data = [] }) {
               outerRadius={95}
               label
             >
-              {data.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              {data.map((item, index) => (
+                <Cell key={index} fill={COLORS[item.sentiment] || "#94a3b8"} />
               ))}
             </Pie>
 

@@ -10,6 +10,7 @@ function GrievanceForm() {
 
   const [files, setFiles] = useState([]);
   const [aiResult, setAiResult] = useState(null);
+  const [submissionStage, setSubmissionStage] = useState("");
 
   const {
     register,
@@ -17,7 +18,6 @@ function GrievanceForm() {
     reset,
     formState: { errors },
   } = useForm();
-
 
   const createMutation = useCreateGrievance();
   const uploadMutation = useUploadAttachment();
@@ -41,19 +41,30 @@ function GrievanceForm() {
   // Submit grievance
   const onSubmit = async (formData) => {
     try {
+      setSubmissionStage("Analyzing grievance with AI...");
+
       const response = await createMutation.mutateAsync(formData);
 
       const grievance = response.data.grievance;
       const ai = response.data.ai;
       const trustScore = response.data.trustScore;
 
-      // Upload files
-      for (const file of files) {
-        await uploadMutation.mutateAsync({
-          grievanceId: grievance.id,
-          file,
-        });
+      if (files.length > 0) {
+        setSubmissionStage(`Uploading attachments (0/${files.length})...`);
+
+        for (let i = 0; i < files.length; i++) {
+          setSubmissionStage(
+            `Uploading attachments (${i + 1}/${files.length})...`,
+          );
+
+          await uploadMutation.mutateAsync({
+            grievanceId: grievance.id,
+            file: files[i],
+          });
+        }
       }
+
+      setSubmissionStage("Finalizing grievance...");
 
       setAiResult({
         grievance,
@@ -63,8 +74,11 @@ function GrievanceForm() {
 
       reset();
       setFiles([]);
+      setSubmissionStage("");
     } catch (err) {
       console.error(err);
+      setSubmissionStage("");
+
       alert(err?.response?.data?.message || "Failed to submit grievance.");
     }
   };
@@ -79,29 +93,22 @@ function GrievanceForm() {
           </h2>
 
           <p className="mt-3">
-            <strong>Grievance No:</strong>{" "}
-            {aiResult.grievance.grievance_no}
+            <strong>Grievance No:</strong> {aiResult.grievance.grievance_no}
           </p>
 
           <p>
-            <strong>Status:</strong>{" "}
-            {aiResult.grievance.status}
+            <strong>Status:</strong> {aiResult.grievance.status}
           </p>
 
           <hr className="my-5" />
 
-          <h3 className="text-xl font-semibold">
-            🤖 AI Analysis
-          </h3>
+          <h3 className="text-xl font-semibold">🤖 AI Analysis</h3>
 
           <div className="mt-4 space-y-4">
-
             <div>
               <p className="font-semibold">Summary</p>
 
-              <p className="text-gray-700">
-                {aiResult.ai.summary}
-              </p>
+              <p className="text-gray-700">{aiResult.ai.summary}</p>
             </div>
 
             <div>
@@ -112,8 +119,8 @@ function GrievanceForm() {
                   aiResult.ai.verdict === "GENUINE"
                     ? "bg-green-100 text-green-700"
                     : aiResult.ai.verdict === "QUESTIONABLE"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
                 }`}
               >
                 {aiResult.ai.verdict}
@@ -121,11 +128,8 @@ function GrievanceForm() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-
               <div className="rounded-lg bg-white p-4 shadow">
-                <p className="text-gray-500">
-                  Spam Score
-                </p>
+                <p className="text-gray-500">Spam Score</p>
 
                 <h2 className="text-2xl font-bold">
                   {aiResult.ai.spam_score}%
@@ -133,9 +137,7 @@ function GrievanceForm() {
               </div>
 
               <div className="rounded-lg bg-white p-4 shadow">
-                <p className="text-gray-500">
-                  Abuse Score
-                </p>
+                <p className="text-gray-500">Abuse Score</p>
 
                 <h2 className="text-2xl font-bold">
                   {aiResult.ai.abuse_score}%
@@ -143,9 +145,7 @@ function GrievanceForm() {
               </div>
 
               <div className="rounded-lg bg-white p-4 shadow">
-                <p className="text-gray-500">
-                  Legitimacy
-                </p>
+                <p className="text-gray-500">Legitimacy</p>
 
                 <h2 className="text-2xl font-bold text-green-600">
                   {aiResult.ai.legitimacy_score}%
@@ -153,21 +153,16 @@ function GrievanceForm() {
               </div>
 
               <div className="rounded-lg bg-white p-4 shadow">
-                <p className="text-gray-500">
-                  Trust Score
-                </p>
+                <p className="text-gray-500">Trust Score</p>
 
                 <h2 className="text-2xl font-bold text-blue-600">
                   {aiResult.trustScore}/100
                 </h2>
               </div>
-
             </div>
 
             <div>
-              <p className="font-semibold">
-                Sentiment
-              </p>
+              <p className="font-semibold">Sentiment</p>
 
               <p>{aiResult.ai.sentiment}</p>
             </div>
@@ -199,9 +194,7 @@ function GrievanceForm() {
         >
           {/* Title */}
           <div>
-            <label className="mb-2 block font-medium">
-              Title
-            </label>
+            <label className="mb-2 block font-medium">Title</label>
 
             <input
               type="text"
@@ -211,16 +204,12 @@ function GrievanceForm() {
               className="w-full rounded-lg border px-3 py-2"
             />
 
-            <p className="mt-1 text-sm text-red-500">
-              {errors.title?.message}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{errors.title?.message}</p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="mb-2 block font-medium">
-              Description
-            </label>
+            <label className="mb-2 block font-medium">Description</label>
 
             <textarea
               rows={6}
@@ -237,9 +226,7 @@ function GrievanceForm() {
 
           {/* Attachments */}
           <div>
-            <label className="mb-2 block font-medium">
-              Attachments
-            </label>
+            <label className="mb-2 block font-medium">Attachments</label>
 
             <input
               type="file"
@@ -261,9 +248,7 @@ function GrievanceForm() {
                     className="flex items-center justify-between rounded-lg border p-3"
                   >
                     <div>
-                      <p className="font-medium">
-                        📎 {file.name}
-                      </p>
+                      <p className="font-medium">📎 {file.name}</p>
 
                       <p className="text-xs text-gray-500">
                         {(file.size / 1024).toFixed(2)} KB
@@ -285,16 +270,18 @@ function GrievanceForm() {
 
           <button
             type="submit"
-            disabled={
-              createMutation.isPending ||
-              uploadMutation.isPending
-            }
-            className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+            disabled={createMutation.isPending || uploadMutation.isPending}
+            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {createMutation.isPending ||
-            uploadMutation.isPending
-              ? "Submitting..."
-              : "Submit Grievance"}
+            {createMutation.isPending || uploadMutation.isPending ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+
+                <span>{submissionStage || "Processing..."}</span>
+              </>
+            ) : (
+              "Submit Grievance"
+            )}
           </button>
         </form>
       )}

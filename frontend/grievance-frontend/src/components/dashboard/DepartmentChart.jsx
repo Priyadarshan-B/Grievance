@@ -22,7 +22,7 @@ function DepartmentChart({ data = [] }) {
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="department_name" />
+            <XAxis dataKey="department_code" />
 
             <YAxis allowDecimals={false} />
 
