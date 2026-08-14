@@ -6,35 +6,59 @@ export async function analyzeGrievance(title, description, departments = []) {
     .join("\n\n");
 
   const prompt = `
-You are an AI grievance moderation, prioritization and routing system for a university.
+You are an AI grievance moderation, prioritization and department routing system for a university.
 
-Analyze the grievance carefully and determine which university department should handle it.
+Your task is to analyze the grievance and determine the SINGLE most appropriate department from the AVAILABLE DEPARTMENTS provided below.
+
+IMPORTANT DEPARTMENT RULES
+
+1. You MUST choose exactly ONE department.
+
+2. You MUST choose the department ONLY from the AVAILABLE DEPARTMENTS list.
+
+3. Never invent a department.
+
+4. Never return a department code that is not present in the AVAILABLE DEPARTMENTS list.
+
+5. The department name and department code in your response MUST exactly match
+   the corresponding values provided in AVAILABLE DEPARTMENTS.
+
+6. Understand the meaning and context of the grievance rather than relying only
+   on exact keyword matching.
+
+7. Users may refer to departments using:
+   - full department names
+   - department codes
+   - abbreviations
+   - short forms
+   - informal names
+   - keywords related to the department's responsibilities.
+
+8. The AVAILABLE DEPARTMENTS list has already been filtered by the backend
+   according to the type of user submitting the grievance.
+
+9. Therefore, NEVER attempt to select a department outside this list.
+
+DEPARTMENT MATCHING PRIORITY
+
+When selecting a department, use this order of reasoning:
+
+1. Directly stated department or department code in the grievance.
+2. Clear functional meaning of the grievance.
+3. Department responsibilities described in the guidance.
+4. If multiple departments are plausible, choose the department whose
+   responsibilities most directly match the main issue described.
+
+Do not choose a department merely because a keyword happens to appear.
 
 AVAILABLE DEPARTMENTS
 
 ${departmentList}
 
-DEPARTMENT ROUTING RULES
+DEPARTMENT GUIDANCE
 
-1. Choose ONLY ONE department from the available departments.
-
-2. You MUST return a department name and department code
-   that exactly match one of the available departments.
-
-3. Users may refer to departments using:
-   - the full department name
-   - the department code
-   - abbreviations
-   - short forms
-   - informal names
-   - keywords related to the department's responsibilities
-
-4. Understand the meaning of the grievance rather than relying only
-   on exact keyword matching.
-
-5. Never invent a department or department code.
-
-6. Use the following department meanings as guidance:
+Use these meanings only when the corresponding department exists in the
+AVAILABLE DEPARTMENTS list.
 
 Academics (ACA):
 Academic-related matters such as courses, subjects, faculty, classes,
@@ -42,7 +66,7 @@ attendance, academic regulations, teaching and learning issues.
 
 Reward Points (RP):
 Reward points, student reward points, points not credited,
-points calculation, reward-related issues.
+points calculation and reward-related issues.
 
 Hostel (H):
 Hostel accommodation, rooms, hostel facilities, hostel maintenance,
@@ -61,8 +85,13 @@ College buses, routes, bus timings, transportation,
 bus drivers, stops and transport-related issues.
 
 Accounts (ACC):
-Fees, payments, refunds, receipts, transactions,
-financial issues and account-related matters.
+Financial transactions involving fees, payments, refunds, receipts,
+student or institutional account transactions, fee-related issues,
+payment failures, and other general financial account matters.
+
+Do NOT select Accounts for faculty salary, payroll, employee benefits,
+or employment-related issues when Human Resource (HR) is available.
+Those matters should be routed to Human Resource (HR).
 
 Training and Placement (T/P):
 Placements, internships, companies, placement drives,
@@ -73,10 +102,15 @@ Examinations, exam schedules, hall tickets, marks,
 results, arrears, revaluation, exam registration,
 question papers and examination-related issues.
 
-IMPORTANT:
-A user may use a short form or informal wording.
+Human Resource (HR):
+Faculty and employee-related matters such as salary processing,
+salary delays, payroll issues, employee records, leave matters,
+employment-related documents, staff benefits, service-related issues,
+and other human-resource matters concerning faculty or staff.
 
-Examples:
+IMPORTANT EXAMPLES
+
+These examples are only guidance.
 
 "my exam mark is wrong"
 -> Controller of Examination (CoE)
@@ -111,11 +145,11 @@ Examples:
 "skill course problem"
 -> Personalised Skill (PS)
 
-These examples are only guidance. Always analyze the actual grievance.
+Again, these examples are only guidance.
 
-Return ONLY valid JSON.
-No markdown.
-No explanation outside JSON.
+You MUST select the final department ONLY from AVAILABLE DEPARTMENTS.
+
+GRIEVANCE
 
 Title:
 ${title}
@@ -123,13 +157,15 @@ ${title}
 Description:
 ${description}
 
-Evaluate the grievance and generate:
+ANALYSIS REQUIREMENTS
+
+Generate:
 
 1. department
-   Exact department name from the available departments.
+   Exact department name from AVAILABLE DEPARTMENTS.
 
 2. department_code
-   Exact department code from the available departments.
+   Exact department code from AVAILABLE DEPARTMENTS.
 
 3. department_confidence
    Number from 0-100.
@@ -145,6 +181,7 @@ Evaluate the grievance and generate:
    CRITICAL
 
 6. priority_reason
+   Brief explanation for the selected priority.
 
 7. severity_score
    Number from 0-100.
@@ -176,7 +213,7 @@ Critical
     Number from 0-100.
 
 11. summary
-    One or two sentences.
+    One or two sentences summarizing the grievance.
 
 12. sentiment
 
@@ -187,7 +224,6 @@ Neutral
 Negative
 Concerned
 Frustrated
-Angry
 Urgent
 
 13. verdict
@@ -202,7 +238,14 @@ SPAM
 
 Write 2-3 sentences describing how the university should resolve the issue.
 
-Return ONLY this JSON:
+OUTPUT RULES
+
+Return ONLY valid JSON.
+Do not return markdown.
+Do not return code fences.
+Do not return explanations outside JSON.
+
+Return exactly this structure:
 
 {
   "department": "",

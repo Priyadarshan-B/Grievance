@@ -1,10 +1,18 @@
 import { useMemo, useState, useEffect } from "react";
-import { Search, Eye, XCircle } from "lucide-react";
+import {
+  Search,
+  Eye,
+  XCircle,
+  FileText,
+  Building2,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useMyGrievances } from "../../hooks/useMyGrievances";
 
-import Pagination from "../../components/common/Pagination";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
 import Badge from "../../components/common/Badge";
@@ -19,17 +27,28 @@ function MyGrievances() {
 
   const grievances = data?.data || [];
 
+  // ==========================================
+  // Reset pagination when search changes
+  // ==========================================
+
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
 
-  const filteredGrievances = useMemo(() => {
-    if (!search.trim()) return grievances;
+  // ==========================================
+  // Filter
+  // ==========================================
 
-    const query = search.toLowerCase();
+  const filteredGrievances = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    if (!query) {
+      return grievances;
+    }
 
     return grievances.filter((item) => {
       return (
+        item.grievance_no?.toLowerCase().includes(query) ||
         item.title?.toLowerCase().includes(query) ||
         item.category_name?.toLowerCase().includes(query) ||
         item.department_name?.toLowerCase().includes(query) ||
@@ -38,26 +57,51 @@ function MyGrievances() {
     });
   }, [grievances, search]);
 
+  // ==========================================
+  // Pagination
+  // ==========================================
+
   const totalPages = Math.ceil(filteredGrievances.length / ITEMS_PER_PAGE);
 
-  const paginatedGrievances = filteredGrievances.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
+  const paginatedGrievances = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    return filteredGrievances.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredGrievances, currentPage]);
+
+  const startItem =
+    filteredGrievances.length === 0
+      ? 0
+      : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+
+  const endItem = Math.min(
     currentPage * ITEMS_PER_PAGE,
+    filteredGrievances.length,
   );
+
+  // ==========================================
+  // Loading
+  // ==========================================
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-20">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Loader />
       </div>
     );
   }
 
+  // ==========================================
+  // Error
+  // ==========================================
+
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
         <div className="flex items-center gap-3">
-          <XCircle className="text-red-600" size={22} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100">
+            <XCircle className="text-red-600" size={21} />
+          </div>
 
           <div>
             <h2 className="font-semibold text-red-700">
@@ -75,23 +119,72 @@ function MyGrievances() {
     );
   }
 
+  // ==========================================
+  // Page Number Helper
+  // ==========================================
+
+  const getPageNumbers = () => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, "...", totalPages];
+    }
+
+    if (currentPage >= totalPages - 2) {
+      return [
+        1,
+        "...",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    }
+
+    return [
+      1,
+      "...",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "...",
+      totalPages,
+    ];
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* ==========================================
+          HEADER
+      ========================================== */}
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">My Grievances</h1>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <FileText size={22} />
+            </div>
 
-          <p className="mt-1 text-slate-500">
-            View and track all grievances you have submitted.
-          </p>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                My Grievances
+              </h1>
+
+              <p className="mt-1 text-sm text-slate-500">
+                View and track all grievances you have submitted.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="relative w-full md:w-80">
+        {/* Search */}
+
+        <div className="relative w-full lg:w-96">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
           />
 
           <input
@@ -99,12 +192,43 @@ function MyGrievances() {
             placeholder="Search grievances..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
           />
         </div>
       </div>
 
-      {/* Empty State */}
+      {/* ==========================================
+          SUMMARY BAR
+      ========================================== */}
+
+      {filteredGrievances.length > 0 && (
+        <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-slate-800">
+              {filteredGrievances.length}{" "}
+              {filteredGrievances.length === 1 ? "grievance" : "grievances"}
+            </p>
+
+            <p className="mt-0.5 text-xs text-slate-500">
+              Your submitted grievance history
+            </p>
+          </div>
+
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="text-left text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-right"
+            >
+              Clear search
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ==========================================
+          EMPTY STATE
+      ========================================== */}
 
       {!filteredGrievances.length ? (
         <EmptyState
@@ -117,129 +241,317 @@ function MyGrievances() {
         />
       ) : (
         <>
-          {/* Desktop Table */}
+          {/* ========================================
+              DESKTOP TABLE
+          ======================================== */}
 
-          <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm lg:block">
-            <table className="w-full">
-              <thead className="border-b bg-slate-50">
-                <tr>
-                  <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-                    Title
-                  </th>
+          <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-slate-200 bg-slate-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Grievance
+                    </th>
 
-                  {/* <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-                    Category
-                  </th> */}
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Department
+                    </th>
 
-                  <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-                    Department
-                  </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Status
+                    </th>
 
-                  <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-                    Status
-                  </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Submitted
+                    </th>
 
-                  <th className="px-5 py-4 text-left text-sm font-semibold text-slate-700">
-                    Submitted
-                  </th>
-
-                  <th className="px-5 py-4 text-center text-sm font-semibold text-slate-700">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {paginatedGrievances.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b transition hover:bg-slate-50"
-                  >
-                    <td className="px-5 py-4 font-medium text-slate-800">
-                      {item.title}
-                    </td>
-
-                    {/* <td className="px-5 py-4">{item.category_name}</td> */}
-
-                    <td className="px-5 py-4">{item.department_name || "-"}</td>
-
-                    <td className="px-5 py-4">
-                      <Badge status={item.status} />
-                    </td>
-
-                    <td className="px-5 py-4">
-                      {item.submitted_at
-                        ? new Date(item.submitted_at).toLocaleDateString()
-                        : "-"}
-                    </td>
-
-                    <td className="px-5 py-4 text-center">
-                      <Link
-                        to={`/user/grievances/${item.id}`}
-                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-                      >
-                        <Eye size={16} />
-                        View
-                      </Link>
-                    </td>
+                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Action
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedGrievances.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="group transition hover:bg-slate-50"
+                    >
+                      {/* Grievance */}
+
+                      <td className="max-w-[420px] px-6 py-5">
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                            <FileText size={17} />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p
+                              className="truncate text-sm font-semibold text-slate-800"
+                              title={item.title}
+                            >
+                              {item.title}
+                            </p>
+
+                            <p className="mt-1 font-mono text-xs text-slate-400">
+                              {item.grievance_no || "—"}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Department */}
+
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Building2 size={16} className="text-slate-400" />
+
+                          <span>{item.department_name || "Not assigned"}</span>
+                        </div>
+                      </td>
+
+                      {/* Status */}
+
+                      <td className="px-6 py-5">
+                        <Badge status={item.status} />
+                      </td>
+
+                      {/* Submitted */}
+
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <CalendarDays size={16} className="text-slate-400" />
+
+                          <span>
+                            {item.submitted_at
+                              ? new Date(item.submitted_at).toLocaleDateString(
+                                  undefined,
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  },
+                                )
+                              : "—"}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Action */}
+
+                      <td className="px-6 py-5 text-center">
+                        <Link
+                          to={`/user/grievances/${item.id}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                        >
+                          <Eye size={16} />
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ========================================
+                DESKTOP PAGINATION
+            ======================================== */}
+
+            <PaginationBar
+              startItem={startItem}
+              endItem={endItem}
+              totalItems={filteredGrievances.length}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              getPageNumbers={getPageNumbers}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
 
-          {/* Mobile Cards */}
+          {/* ==========================================
+              MOBILE CARDS
+          ========================================== */}
 
           <div className="grid gap-4 lg:hidden">
             {paginatedGrievances.map((item) => (
               <div
                 key={item.id}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-slate-800">{item.title}</h3>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <FileText size={18} />
+                  </div>
 
-                  <Badge status={item.status} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="font-mono text-xs text-slate-400">
+                          {item.grievance_no || "—"}
+                        </p>
+
+                        <h3 className="mt-1 font-semibold leading-6 text-slate-800">
+                          {item.title}
+                        </h3>
+                      </div>
+
+                      <Badge status={item.status} />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm text-slate-600">
-                  {/* <p>
-                    <span className="font-medium">Category:</span>{" "}
-                    {item.category_name}
-                  </p> */}
+                <div className="mt-5 grid gap-3 rounded-xl bg-slate-50 p-4">
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="flex items-center gap-2 text-slate-500">
+                      <Building2 size={15} />
+                      Department
+                    </span>
 
-                  <p>
-                    <span className="font-medium">Department:</span>{" "}
-                    {item.department_name || "-"}
-                  </p>
+                    <span className="text-right font-medium text-slate-700">
+                      {item.department_name || "Not assigned"}
+                    </span>
+                  </div>
 
-                  <p>
-                    <span className="font-medium">Submitted:</span>{" "}
-                    {item.submitted_at
-                      ? new Date(item.submitted_at).toLocaleDateString()
-                      : "-"}
-                  </p>
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="flex items-center gap-2 text-slate-500">
+                      <CalendarDays size={15} />
+                      Submitted
+                    </span>
+
+                    <span className="font-medium text-slate-700">
+                      {item.submitted_at
+                        ? new Date(item.submitted_at).toLocaleDateString(
+                            undefined,
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )
+                        : "—"}
+                    </span>
+                  </div>
                 </div>
 
                 <Link
                   to={`/user/grievances/${item.id}`}
-                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
                 >
                   <Eye size={16} />
                   View Details
                 </Link>
               </div>
             ))}
+
+            {/* Mobile Pagination */}
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <PaginationBar
+                startItem={startItem}
+                endItem={endItem}
+                totalItems={filteredGrievances.length}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                getPageNumbers={getPageNumbers}
+                setCurrentPage={setCurrentPage}
+                mobile
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+function PaginationBar({
+  startItem,
+  endItem,
+  totalItems,
+  currentPage,
+  totalPages,
+  getPageNumbers,
+  setCurrentPage,
+  mobile = false,
+}) {
+  return (
+    <div
+      className={`flex flex-col gap-4 ${
+        mobile
+          ? ""
+          : "border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+      }`}
+    >
+      <p className="text-sm text-slate-500">
+        Showing{" "}
+        <span className="font-semibold text-slate-700">{startItem}</span> to{" "}
+        <span className="font-semibold text-slate-700">{endItem}</span> of{" "}
+        <span className="font-semibold text-slate-700">{totalItems}</span>{" "}
+        grievances
+      </p>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between gap-2 sm:justify-end">
+          {/* Previous */}
+
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            title="Previous page"
+          >
+            <ChevronLeft size={17} />
+          </button>
+
+          {/* Page Numbers */}
+
+          <div className="flex items-center gap-1">
+            {getPageNumbers().map((page, index) =>
+              page === "..." ? (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="flex h-9 w-8 items-center justify-center text-sm text-slate-400"
+                >
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  className={`h-9 min-w-9 rounded-lg px-2 text-sm font-medium transition ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ),
+            )}
           </div>
 
-          {/* Pagination */}
+          {/* Next */}
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </>
+          <button
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((page) => Math.min(page + 1, totalPages))
+            }
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            title="Next page"
+          >
+            <ChevronRight size={17} />
+          </button>
+        </div>
       )}
     </div>
   );

@@ -28,8 +28,15 @@ const generateGrievanceNumber = async () => {
 };
 
 // Create
-export const createGrievanceService = async (data, userId) => {
+export const createGrievanceService = async (data, userId, userType) => {
   const { title, description } = data;
+
+  // Validate user type
+  const validUserTypes = ["student", "faculty"];
+
+  if (!validUserTypes.includes(userType)) {
+    throw new Error("Invalid user type.");
+  }
 
   // Generate Grievance Number
   const grievance_no = await generateGrievanceNumber();
@@ -43,25 +50,45 @@ export const createGrievanceService = async (data, userId) => {
     );
   }
 
-  // Fetch Active Departments
+  // ==========================================
+  // Fetch Departments Based On User Type
+  // ==========================================
+
   const departmentResult = await pool.query(
     `
     SELECT
       id,
-      department_name, department_code
+      department_name,
+      department_code,
+      department_type
     FROM departments
-    WHERE is_active = 1
+    WHERE department_type IN ($1, 'both')
+    AND is_active = 1
     ORDER BY department_name
     `,
+    [userType],
   );
 
   const departments = departmentResult.rows;
 
   if (departments.length === 0) {
-    throw new Error("No active departments found.");
+    throw new Error(`No active ${userType} departments found.`);
   }
 
+  console.log(`========== ${userType.toUpperCase()} DEPARTMENTS ==========`);
+
+  console.log(
+    departments.map((d) => ({
+      id: d.id,
+      name: d.department_name,
+      code: d.department_code,
+      type: d.department_type,
+    })),
+  );
+
+  // ==========================================
   // AI Analysis
+  // ==========================================
 
   const analysis = await analyzeGrievance(
     title,
@@ -75,7 +102,9 @@ export const createGrievanceService = async (data, userId) => {
   console.log("========== GEMINI ANALYSIS ==========");
   console.log(JSON.stringify(analysis, null, 2));
 
-  // Match Department
+  // ==========================================
+  // Match AI Department
+  // ==========================================
 
   const aiDepartmentCode = (analysis.department_code || "")
     .trim()
@@ -85,6 +114,9 @@ export const createGrievanceService = async (data, userId) => {
     (d) => d.department_code.trim().toLowerCase() === aiDepartmentCode,
   );
 
+  // SECURITY CHECK
+  // AI MUST select a department from the filtered list.
+
   if (!selectedDepartment) {
     console.warn(`Unknown AI Department Code: ${analysis.department_code}`);
 
@@ -93,7 +125,13 @@ export const createGrievanceService = async (data, userId) => {
 
   const department_id = selectedDepartment.id;
 
+  console.log(
+    `Selected Department: ${selectedDepartment.department_name} (${selectedDepartment.department_code})`,
+  );
+
+  // ==========================================
   // Save Grievance
+  // ==========================================
 
   const grievanceResult = await pool.query(
     `
@@ -122,10 +160,16 @@ export const createGrievanceService = async (data, userId) => {
 
   const grievance = grievanceResult.rows[0];
 
+  // ==========================================
   // Save AI Analysis
+  // ==========================================
+
   await saveAIAnalysis(grievance.id, userId, analysis);
 
+  // ==========================================
   // Update Trust Score
+  // ==========================================
+
   const trustScore = await updateTrustScore(userId, analysis);
 
   return {
@@ -134,7 +178,6 @@ export const createGrievanceService = async (data, userId) => {
     trustScore,
   };
 };
-
 export const getGrievancesService = async (user) => {
   // Super Admin
   if (user.role === "super_admin") {
@@ -178,8 +221,8 @@ export const getGrievancesService = async (user) => {
       WHERE g.is_active = 1
 
       ORDER BY
-        ai.severity_score DESC NULLS LAST,
-        g.submitted_at DESC
+  g.submitted_at DESC,
+  ai.severity_score DESC NULLS LAST
     `);
 
     return result.rows;
@@ -246,8 +289,8 @@ export const getGrievancesService = async (user) => {
         AND g.is_active = 1
 
       ORDER BY
-        ai.severity_score DESC NULLS LAST,
-        g.submitted_at DESC
+        g.submitted_at DESC,
+        ai.severity_score DESC NULLS LAST
       `,
       [departmentId],
     );

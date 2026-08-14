@@ -13,6 +13,7 @@ export const loginService = async (username, password) => {
             full_name,
             email,
             role,
+            user_type,
             first_login,
             is_active,
             trust_score,
@@ -46,10 +47,13 @@ export const loginService = async (username, password) => {
 
   const mode = "user";
 
+  // user_type is included in JWT so grievance services
+  // can identify whether this is a student or faculty user.
   const token = generateToken({
     id: user.id,
     username: user.username,
     role: user.role,
+    user_type: user.user_type,
     mode,
   });
 
@@ -82,6 +86,7 @@ export const adminGoogleLoginService = async (accessToken) => {
             full_name,
             email,
             role,
+            user_type,
             first_login,
             is_active,
             trust_score,
@@ -113,6 +118,7 @@ export const adminGoogleLoginService = async (accessToken) => {
     id: user.id,
     username: user.username,
     role: user.role,
+    user_type: user.user_type,
     mode,
   });
 

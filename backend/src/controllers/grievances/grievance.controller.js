@@ -10,7 +10,7 @@ import {
   reviewGrievanceService,
   resolveGrievanceService,
   rejectGrievanceService,
-  changeDepartmentService 
+  changeDepartmentService,
 } from "../../services/grievances/grievance.service.js";
 
 import { addHistory } from "../../services/history/history.service.js";
@@ -20,7 +20,11 @@ import { addHistory } from "../../services/history/history.service.js";
 // =========================
 export const createGrievance = async (req, res, next) => {
   try {
-    const result = await createGrievanceService(req.body, req.user.id);
+    const result = await createGrievanceService(
+      req.body,
+      req.user.id,
+      req.user.user_type,
+    );
 
     await addHistory({
       grievanceId: result.grievance.id,
@@ -39,7 +43,6 @@ export const createGrievance = async (req, res, next) => {
     next(err);
   }
 };
-
 export const getGrievances = async (req, res) => {
   try {
     const grievances = await getGrievancesService(req.user);
@@ -231,7 +234,7 @@ export const changeDepartment = async (req, res, next) => {
       req.params.id,
       req.body.department_id,
       req.user.id,
-      req.body.reason
+      req.body.reason,
     );
 
     await addHistory({

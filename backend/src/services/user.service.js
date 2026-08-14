@@ -7,13 +7,22 @@ import { generatePassword } from "../utils/passwordGenerator.js";
    Create User
 ========================= */
 export const createUserService = async (data) => {
-  const { full_name, email, phone, role } = data;
+  const { full_name, email, phone, role, user_type = "student" } = data;
 
   const validRoles = ["user", "dept_admin", "super_admin"];
+  const validUserTypes = ["student", "faculty"];
 
   if (!validRoles.includes(role)) {
     throw new Error("Invalid role.");
   }
+
+  if (!validUserTypes.includes(user_type)) {
+    throw new Error("Invalid user type. Use student or faculty.");
+  }
+
+  // Admin accounts are faculty accounts.
+  const finalUserType =
+    role === "dept_admin" || role === "super_admin" ? "faculty" : user_type;
 
   // Check email
   const emailExists = await pool.query(
@@ -41,11 +50,12 @@ export const createUserService = async (data) => {
             username,
             password_hash,
             role,
+            user_type,
             first_login,
             is_active
         )
         VALUES
-        ($1,$2,$3,$4,$5,$6,1,1)
+        ($1,$2,$3,$4,$5,$6,$7,1,1)
         RETURNING
             id,
             full_name,
@@ -53,11 +63,12 @@ export const createUserService = async (data) => {
             phone,
             username,
             role,
+            user_type,
             first_login,
             is_active,
             created_at
         `,
-    [full_name, email, phone, username, hashedPassword, role],
+    [full_name, email, phone, username, hashedPassword, role, finalUserType],
   );
 
   return {
@@ -81,6 +92,7 @@ export const getUsersService = async () => {
             phone,
             username,
             role,
+            user_type,
             first_login,
             is_active,
             created_at
@@ -104,6 +116,7 @@ export const getUserByIdService = async (id) => {
             phone,
             username,
             role,
+            user_type,
             first_login,
             is_active,
             created_at
@@ -142,6 +155,7 @@ export const updateUserService = async (id, data) => {
             phone,
             username,
             role,
+            user_type,
             first_login,
             is_active,
             updated_at
@@ -217,6 +231,7 @@ export const getMyProfileService = async (userId) => {
       u.phone,
       u.username,
       u.role,
+      u.user_type,
       u.trust_score,
       u.warning_count,
       u.ai_flag_count,

@@ -6,6 +6,7 @@ export const generateToken = (payload) => {
       id: payload.id,
       username: payload.username,
       role: payload.role,
+      user_type: payload.user_type,
       mode: payload.mode,
     },
 

@@ -3,7 +3,7 @@ import {
   adminGoogleLoginService,
 } from "../services/auth.service.js";
 
-// Student Login
+// User Login
 export const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
