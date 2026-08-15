@@ -13,7 +13,7 @@ function Badge({ status }) {
 
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ${
         colors[value] || "bg-gray-100 text-gray-700"
       }`}
     >

@@ -27,12 +27,12 @@ const menuItems = [
 
 function Sidebar() {
   return (
-    <aside className="w-64 bg-white border-r shadow-sm flex flex-col">
-      <div className="h-16 flex items-center justify-center border-b">
-        <h2 className="text-xl font-bold text-blue-600">AI Grievance</h2>
+    <aside className="flex w-64 flex-col border-r border-white/10 bg-slate-950/70 shadow-[0_0_30px_rgba(15,23,42,0.6)] backdrop-blur-xl">
+      <div className="flex h-16 items-center justify-center border-b border-white/10 px-4">
+        <h2 className="text-xl font-bold text-cyan-300">AI Grievance</h2>
       </div>
 
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 space-y-2 p-4">
         {menuItems.map((item) => {
           const Icon = item.icon;
 
@@ -41,10 +41,10 @@ function Sidebar() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all duration-200 ${
+                `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow"
-                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                    : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                 }`
               }
             >

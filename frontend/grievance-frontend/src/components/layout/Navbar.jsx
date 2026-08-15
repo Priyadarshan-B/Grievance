@@ -13,16 +13,18 @@ function Navbar() {
   };
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-6">
+    <header className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/60 px-6 shadow-[0_10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl">
       <div>
-        <h2 className="font-semibold text-lg">Welcome, {user?.full_name}</h2>
+        <h2 className="text-lg font-semibold text-white">
+          Welcome, {user?.full_name}
+        </h2>
 
-        <p className="text-sm text-gray-500">{user?.email}</p>
+        <p className="text-sm text-slate-300">{user?.email}</p>
       </div>
 
       <button
         onClick={handleLogout}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+        className="rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-500/20 transition hover:brightness-110"
       >
         Logout
       </button>

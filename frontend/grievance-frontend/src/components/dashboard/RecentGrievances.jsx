@@ -31,21 +31,21 @@ function RecentGrievances({ data = [] }) {
   return (
     <Card>
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Recent Grievances</h2>
+        <h2 className="text-lg font-bold text-slate-900">Recent Grievances</h2>
 
-        <span className="text-sm text-slate-500">Latest 10</span>
+        <span className="text-sm font-medium text-slate-600">Latest 10</span>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
+        <table className="min-w-full text-sm text-slate-700">
           <thead>
-            <tr className="border-b bg-slate-50">
-              <th className="p-3 text-left">Grievance No</th>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Department</th>
-              <th className="p-3 text-left">Priority</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">AI Verdict</th>
+            <tr className="border-b border-slate-200 bg-slate-50">
+              <th className="p-3 text-left font-semibold text-slate-700">Grievance No</th>
+              <th className="p-3 text-left font-semibold text-slate-700">Title</th>
+              <th className="p-3 text-left font-semibold text-slate-700">Department</th>
+              <th className="p-3 text-left font-semibold text-slate-700">Priority</th>
+              <th className="p-3 text-left font-semibold text-slate-700">Status</th>
+              <th className="p-3 text-left font-semibold text-slate-700">AI Verdict</th>
             </tr>
           </thead>
 

@@ -253,19 +253,23 @@ function GrievanceDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.22),transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.24),transparent_28%),linear-gradient(135deg,#020817_0%,#0f172a_20%,#1e1b4b_52%,#111827_100%)]">
+      <div className="absolute -top-20 left-0 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
+      <div className="absolute top-20 right-0 h-80 w-80 rounded-full bg-violet-400/20 blur-3xl" />
+      <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-300/15 blur-3xl" />
+
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div className="border-b border-slate-200 bg-white">
+      <div className="relative z-10 border-b border-slate-700/80 bg-slate-950/65 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+                className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-slate-200 transition hover:bg-slate-800"
                 title="Go back"
               >
                 <ArrowLeft size={19} />
@@ -273,7 +277,7 @@ function GrievanceDetails() {
 
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-sm font-semibold text-blue-600">
+                  <span className="font-mono text-sm font-semibold text-cyan-300">
                     {details.grievance_no}
                   </span>
 
@@ -288,11 +292,11 @@ function GrievanceDetails() {
                   </span>
                 </div>
 
-                <h1 className="mt-2 max-w-4xl text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                <h1 className="mt-2 max-w-4xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   {details.title}
                 </h1>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-300">
                   Submitted {new Date(details.submitted_at).toLocaleString()}
                 </p>
               </div>
@@ -302,7 +306,7 @@ function GrievanceDetails() {
               type="button"
               onClick={refresh}
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:opacity-50"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
               Refresh
@@ -326,8 +330,8 @@ function GrievanceDetails() {
                 GRIEVANCE INFORMATION
             =============================================== */}
 
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-6 py-5">
+            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-blue-50/80 shadow-[0_18px_40px_rgba(59,130,246,0.08)]">
+              <div className="border-b border-sky-100 bg-gradient-to-r from-sky-100/80 to-indigo-50/70 px-6 py-5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <FileText size={20} />
@@ -434,7 +438,7 @@ function GrievanceDetails() {
               <div className="p-6">
                 {/* AI Summary */}
 
-                <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+                <div className="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-fuchsia-50 p-4 shadow-sm">
                   <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
                     AI Summary
                   </p>
@@ -626,7 +630,7 @@ function GrievanceDetails() {
                         departmentLoading ||
                         !selectedDepartmentId
                       }
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Building2 size={17} />
                       Change Department
@@ -675,7 +679,7 @@ function GrievanceDetails() {
                         type="button"
                         onClick={handleReview}
                         disabled={actionLoading}
-                        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <Clock3 size={17} />
                         Mark Under Review
@@ -688,7 +692,7 @@ function GrievanceDetails() {
                           type="button"
                           onClick={handleResolve}
                           disabled={actionLoading}
-                          className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-lime-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <CheckCircle2 size={17} />
                           Resolve
@@ -698,7 +702,7 @@ function GrievanceDetails() {
                           type="button"
                           onClick={handleReject}
                           disabled={actionLoading}
-                          className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-rose-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <XCircle size={17} />
                           Reject
@@ -718,8 +722,8 @@ function GrievanceDetails() {
           <aside className="space-y-6">
             {/* Current Status */}
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <section className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-6 shadow-[0_18px_38px_rgba(124,58,237,0.08)]">
+              <p className="text-xs font-semibold uppercase tracking-wider text-violet-600">
                 Current Status
               </p>
 
@@ -760,7 +764,7 @@ function GrievanceDetails() {
 
             {/* Timeline */}
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-sky-50 p-6 shadow-[0_18px_38px_rgba(14,165,233,0.08)]">
               <SectionHeading
                 icon={<Clock3 size={19} />}
                 title="Activity Timeline"

@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 import { useMyGrievances } from "../../hooks/useMyGrievances";
@@ -155,299 +156,191 @@ function MyGrievances() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* ==========================================
-          HEADER
-      ========================================== */}
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)]">
+      <div className="absolute -top-20 left-0 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
+      <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl" />
+      <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-400/20 blur-3xl" />
 
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <FileText size={22} />
+      <div className="relative z-10 space-y-6 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-3xl border border-white/60 bg-white/10 p-5 shadow-[0_20px_60px_rgba(59,130,246,0.12)] backdrop-blur-xl"
+        >
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20">
+                  <FileText size={22} />
+                </div>
+
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-white">
+                    My Grievances
+                  </h1>
+
+                  <p className="mt-1 text-sm text-slate-200">
+                    View and track all grievances you have submitted.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                My Grievances
-              </h1>
+            <div className="relative w-full lg:w-96">
+              <Search
+                size={18}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
 
-              <p className="mt-1 text-sm text-slate-500">
-                View and track all grievances you have submitted.
+              <input
+                type="text"
+                placeholder="Search grievances..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-2xl border border-white/10 bg-slate-900/60 py-3 pl-11 pr-4 text-sm text-white shadow-inner shadow-slate-950/30 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-500/20"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {filteredGrievances.length > 0 && (
+          <div className="flex flex-col gap-3 rounded-2xl border border-cyan-400/20 bg-slate-900/40 px-5 py-4 text-slate-100 shadow-[0_12px_30px_rgba(8,145,178,0.08)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-white">
+                {filteredGrievances.length}{" "}
+                {filteredGrievances.length === 1 ? "grievance" : "grievances"}
+              </p>
+
+              <p className="mt-0.5 text-xs text-slate-300">
+                Your submitted grievance history
               </p>
             </div>
+
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="text-left text-sm font-medium text-cyan-300 hover:text-cyan-200 sm:text-right"
+              >
+                Clear search
+              </button>
+            )}
           </div>
-        </div>
+        )}
 
-        {/* Search */}
-
-        <div className="relative w-full lg:w-96">
-          <Search
-            size={18}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-
-          <input
-            type="text"
-            placeholder="Search grievances..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
-          />
-        </div>
-      </div>
-
-      {/* ==========================================
-          SUMMARY BAR
-      ========================================== */}
-
-      {filteredGrievances.length > 0 && (
-        <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">
-              {filteredGrievances.length}{" "}
-              {filteredGrievances.length === 1 ? "grievance" : "grievances"}
-            </p>
-
-            <p className="mt-0.5 text-xs text-slate-500">
-              Your submitted grievance history
-            </p>
-          </div>
-
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="text-left text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-right"
-            >
-              Clear search
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* ==========================================
-          EMPTY STATE
-      ========================================== */}
-
-      {!filteredGrievances.length ? (
-        <EmptyState
-          title="No grievances found"
-          description={
-            search
-              ? "No grievances match your search."
-              : "You haven't submitted any grievances yet."
-          }
-        />
-      ) : (
-        <>
-          {/* ========================================
-              DESKTOP TABLE
-          ======================================== */}
-
-          <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:block">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-slate-200 bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Grievance
-                    </th>
-
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Department
-                    </th>
-
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Status
-                    </th>
-
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Submitted
-                    </th>
-
-                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-100">
-                  {paginatedGrievances.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="group transition hover:bg-slate-50"
-                    >
-                      {/* Grievance */}
-
-                      <td className="max-w-[420px] px-6 py-5">
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                            <FileText size={17} />
-                          </div>
-
-                          <div className="min-w-0">
-                            <p
-                              className="truncate text-sm font-semibold text-slate-800"
-                              title={item.title}
-                            >
-                              {item.title}
-                            </p>
-
-                            <p className="mt-1 font-mono text-xs text-slate-400">
-                              {item.grievance_no || "—"}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Department */}
-
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Building2 size={16} className="text-slate-400" />
-
-                          <span>{item.department_name || "Not assigned"}</span>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-
-                      <td className="px-6 py-5">
-                        <Badge status={item.status} />
-                      </td>
-
-                      {/* Submitted */}
-
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-2 text-sm text-slate-500">
-                          <CalendarDays size={16} className="text-slate-400" />
-
-                          <span>
-                            {item.submitted_at
-                              ? new Date(item.submitted_at).toLocaleDateString(
-                                  undefined,
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  },
-                                )
-                              : "—"}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Action */}
-
-                      <td className="px-6 py-5 text-center">
-                        <Link
-                          to={`/user/grievances/${item.id}`}
-                          className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
-                        >
-                          <Eye size={16} />
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* ========================================
-                DESKTOP PAGINATION
-            ======================================== */}
-
-            <PaginationBar
-              startItem={startItem}
-              endItem={endItem}
-              totalItems={filteredGrievances.length}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              getPageNumbers={getPageNumbers}
-              setCurrentPage={setCurrentPage}
+        {!filteredGrievances.length ? (
+          <div className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.6)] backdrop-blur-xl">
+            <EmptyState
+              title="No grievances found"
+              description={
+                search
+                  ? "No grievances match your search."
+                  : "You haven't submitted any grievances yet."
+              }
             />
           </div>
+        ) : (
+          <>
+            <div className="hidden overflow-hidden rounded-3xl border border-white/15 bg-slate-950/40 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl lg:block">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-white/10 bg-slate-900/60">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
+                        Grievance
+                      </th>
 
-          {/* ==========================================
-              MOBILE CARDS
-          ========================================== */}
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
+                        Department
+                      </th>
 
-          <div className="grid gap-4 lg:hidden">
-            {paginatedGrievances.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <FileText size={18} />
-                  </div>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
+                        Status
+                      </th>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p className="font-mono text-xs text-slate-400">
-                          {item.grievance_no || "—"}
-                        </p>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
+                        Submitted
+                      </th>
 
-                        <h3 className="mt-1 font-semibold leading-6 text-slate-800">
-                          {item.title}
-                        </h3>
-                      </div>
+                      <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-300">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
 
-                      <Badge status={item.status} />
-                    </div>
-                  </div>
-                </div>
+                  <tbody className="divide-y divide-white/5">
+                    {paginatedGrievances.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="group transition hover:bg-slate-900/70"
+                      >
+                        <td className="max-w-[420px] px-6 py-5">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/20">
+                              <FileText size={17} />
+                            </div>
 
-                <div className="mt-5 grid gap-3 rounded-xl bg-slate-50 p-4">
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="flex items-center gap-2 text-slate-500">
-                      <Building2 size={15} />
-                      Department
-                    </span>
+                            <div className="min-w-0">
+                              <p
+                                className="truncate text-sm font-semibold text-white"
+                                title={item.title}
+                              >
+                                {item.title}
+                              </p>
 
-                    <span className="text-right font-medium text-slate-700">
-                      {item.department_name || "Not assigned"}
-                    </span>
-                  </div>
+                              <p className="mt-1 font-mono text-xs text-slate-400">
+                                {item.grievance_no || "—"}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
 
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="flex items-center gap-2 text-slate-500">
-                      <CalendarDays size={15} />
-                      Submitted
-                    </span>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-2 text-sm text-slate-200">
+                            <Building2 size={16} className="text-slate-400" />
 
-                    <span className="font-medium text-slate-700">
-                      {item.submitted_at
-                        ? new Date(item.submitted_at).toLocaleDateString(
-                            undefined,
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )
-                        : "—"}
-                    </span>
-                  </div>
-                </div>
+                            <span>{item.department_name || "Not assigned"}</span>
+                          </div>
+                        </td>
 
-                <Link
-                  to={`/user/grievances/${item.id}`}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-                >
-                  <Eye size={16} />
-                  View Details
-                </Link>
+                        <td className="px-6 py-5">
+                          <Badge status={item.status} />
+                        </td>
+
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-2 text-sm text-slate-300">
+                            <CalendarDays size={16} className="text-slate-400" />
+
+                            <span>
+                              {item.submitted_at
+                                ? new Date(item.submitted_at).toLocaleDateString(
+                                    undefined,
+                                    {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                    },
+                                  )
+                                : "—"}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-5 text-center">
+                          <Link
+                            to={`/user/grievances/${item.id}`}
+                            className="inline-flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                          >
+                            <Eye size={16} />
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ))}
 
-            {/* Mobile Pagination */}
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <PaginationBar
                 startItem={startItem}
                 endItem={endItem}
@@ -456,12 +349,98 @@ function MyGrievances() {
                 totalPages={totalPages}
                 getPageNumbers={getPageNumbers}
                 setCurrentPage={setCurrentPage}
-                mobile
               />
             </div>
-          </div>
-        </>
-      )}
+
+            <div className="grid gap-4 lg:hidden">
+              {paginatedGrievances.map((item) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-3xl border border-white/10 bg-slate-950/45 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.55)] backdrop-blur-xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/20">
+                      <FileText size={18} />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <p className="font-mono text-xs text-slate-400">
+                            {item.grievance_no || "—"}
+                          </p>
+
+                          <h3 className="mt-1 font-semibold leading-6 text-white">
+                            {item.title}
+                          </h3>
+                        </div>
+
+                        <Badge status={item.status} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+                    <div className="flex items-center justify-between gap-4 text-sm">
+                      <span className="flex items-center gap-2 text-slate-400">
+                        <Building2 size={15} />
+                        Department
+                      </span>
+
+                      <span className="text-right font-medium text-slate-100">
+                        {item.department_name || "Not assigned"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 text-sm">
+                      <span className="flex items-center gap-2 text-slate-400">
+                        <CalendarDays size={15} />
+                        Submitted
+                      </span>
+
+                      <span className="font-medium text-slate-100">
+                        {item.submitted_at
+                          ? new Date(item.submitted_at).toLocaleDateString(
+                              undefined,
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )
+                          : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/user/grievances/${item.id}`}
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+                  >
+                    <Eye size={16} />
+                    View Details
+                  </Link>
+                </motion.div>
+              ))}
+
+              <div className="rounded-3xl border border-white/10 bg-slate-950/40 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.55)] backdrop-blur-xl">
+                <PaginationBar
+                  startItem={startItem}
+                  endItem={endItem}
+                  totalItems={filteredGrievances.length}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  getPageNumbers={getPageNumbers}
+                  setCurrentPage={setCurrentPage}
+                  mobile
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

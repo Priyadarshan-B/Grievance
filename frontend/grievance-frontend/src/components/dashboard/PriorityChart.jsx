@@ -19,7 +19,7 @@ const COLORS = {
 function PriorityChart({ data = [] }) {
   return (
     <Card>
-      <h2 className="mb-5 text-lg font-semibold">Priority Distribution</h2>
+      <h2 className="mb-5 text-lg font-bold text-slate-900">Priority Distribution</h2>
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -39,8 +39,8 @@ function PriorityChart({ data = [] }) {
               ))}
             </Pie>
 
-            <Tooltip />
-            <Legend />
+            <Tooltip contentStyle={{ borderRadius: 12, borderColor: '#cbd5e1', color: '#0f172a' }} />
+            <Legend wrapperStyle={{ color: '#0f172a', fontSize: '12px' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

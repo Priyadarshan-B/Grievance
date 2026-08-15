@@ -39,7 +39,7 @@ console.log(data);
 
   return (
     <Card>
-      <h2 className="mb-5 text-lg font-semibold">Status Distribution</h2>
+      <h2 className="mb-5 text-lg font-bold text-slate-900">Status Distribution</h2>
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -56,9 +56,9 @@ console.log(data);
               ))}
             </Pie>
 
-            <Tooltip />
+            <Tooltip contentStyle={{ borderRadius: 12, borderColor: '#cbd5e1', color: '#0f172a' }} />
 
-            <Legend />
+            <Legend wrapperStyle={{ color: '#0f172a', fontSize: '12px' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

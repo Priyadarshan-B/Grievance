@@ -9,6 +9,7 @@ import {
   Hash,
   Sparkles,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 
 import Loader from "../../components/common/Loader";
@@ -126,146 +127,240 @@ function GrievanceDetails() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      {/* ==================================================
-          BACK
-      ================================================== */}
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)]">
+      <div className="absolute -top-20 left-0 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
+      <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl" />
+      <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-400/20 blur-3xl" />
 
-      <Link
-        to="/user/grievances"
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600"
-      >
-        <ArrowLeft size={17} />
-        Back to My Grievances
-      </Link>
+      <div className="relative z-10 mx-auto max-w-6xl space-y-6 p-6">
+        <Link
+          to="/user/grievances"
+          className="inline-flex items-center gap-2 text-sm font-medium text-cyan-200 transition hover:text-cyan-100"
+        >
+          <ArrowLeft size={17} />
+          Back to My Grievances
+        </Link>
 
-      {/* ==================================================
-          HEADER
-      ================================================== */}
+        <motion.section
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="overflow-hidden rounded-3xl border border-white/15 bg-slate-950/40 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl"
+        >
+          <div className="border-b border-white/10 bg-gradient-to-r from-cyan-500/10 via-slate-950/0 to-violet-500/10 px-6 py-7 sm:px-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-800/70 px-3 py-1 font-mono text-xs font-semibold text-slate-200">
+                    <Hash size={13} />
+                    {grievanceData.grievance_no}
+                  </span>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 bg-gradient-to-r from-blue-50 via-white to-white px-6 py-7 sm:px-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 font-mono text-xs font-semibold text-slate-600">
-                  <Hash size={13} />
-                  {grievanceData.grievance_no}
-                </span>
+                  <Badge status={grievanceData.status} />
+                </div>
 
-                <Badge status={grievanceData.status} />
+                <h1 className="mt-4 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  {grievanceData.title}
+                </h1>
+
+                <p className="mt-2 text-sm text-slate-300">
+                  Submitted on {formatDate(grievanceData.submitted_at)}
+                </p>
               </div>
-
-              <h1 className="mt-4 text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
-                {grievanceData.title}
-              </h1>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Submitted on {formatDate(grievanceData.submitted_at)}
-              </p>
             </div>
           </div>
-        </div>
 
-        {/* Quick Info */}
+          <div className="grid divide-y divide-white/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <QuickInfo
+              icon={<Building2 size={18} />}
+              label="Department"
+              value={grievanceData.department_name || "Not assigned"}
+            />
 
-        <div className="grid divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          <QuickInfo
-            icon={<Building2 size={18} />}
-            label="Department"
-            value={grievanceData.department_name || "Not assigned"}
-          />
+            <QuickInfo
+              icon={<Flag size={18} />}
+              label="Priority"
+              value={
+                <span
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${priorityStyle(
+                    grievanceData.priority,
+                  )}`}
+                >
+                  {grievanceData.priority || "Low"}
+                </span>
+              }
+            />
 
-          <QuickInfo
-            icon={<Flag size={18} />}
-            label="Priority"
-            value={
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${priorityStyle(
-                  grievanceData.priority,
-                )}`}
-              >
-                {grievanceData.priority || "Low"}
-              </span>
-            }
-          />
+            <QuickInfo
+              icon={<CalendarDays size={18} />}
+              label="Submitted"
+              value={formatDateOnly(grievanceData.submitted_at)}
+            />
+          </div>
+        </motion.section>
 
-          <QuickInfo
-            icon={<CalendarDays size={18} />}
-            label="Submitted"
-            value={formatDateOnly(grievanceData.submitted_at)}
-          />
-        </div>
-      </section>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="space-y-6">
+            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-0 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+              <div className="border-b border-white/10 px-6 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/20">
+                    <FileText size={20} />
+                  </div>
 
-      {/* ==================================================
-          MAIN CONTENT
-      ================================================== */}
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        {/* =================================================
-            LEFT
-        ================================================= */}
-
-        <div className="space-y-6">
-          {/* Description */}
-
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <FileText size={20} />
+                  <div>
+                    <h2 className="font-semibold text-white">Your Grievance</h2>
+                    <p className="text-sm text-slate-300">
+                      Details submitted with your grievance
+                    </p>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <h2 className="font-semibold text-slate-900">
-                    Your Grievance
-                  </h2>
-
-                  <p className="text-sm text-slate-500">
-                    Details submitted with your grievance
+              <div className="p-6">
+                <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+                  <p className="whitespace-pre-wrap text-sm leading-7 text-slate-200">
+                    {grievanceData.description || "No description provided."}
                   </p>
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="p-6">
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
-                <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
-                  {grievanceData.description || "No description provided."}
-                </p>
+            <section className="overflow-hidden rounded-3xl border border-cyan-400/20 bg-slate-950/40 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+              <div className="border-b border-cyan-400/20 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 px-6 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/20">
+                    <Sparkles size={20} />
+                  </div>
+
+                  <div>
+                    <h2 className="font-semibold text-white">AI Summary</h2>
+                    <p className="text-sm text-slate-300">
+                      Automated summary of your grievance
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </section>
 
-          {/* AI Summary */}
+              <div className="p-6">
+                <div className="rounded-2xl border border-cyan-400/20 bg-slate-900/60 p-5">
+                  <p className="text-sm leading-7 text-slate-200">
+                    {grievanceData.summary || "AI summary is not available yet."}
+                  </p>
+                </div>
 
-          <section className="overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm">
-            <div className="border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-white px-6 py-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
-                  <Sparkles size={20} />
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <SimpleInfo
+                    label="Priority"
+                    value={
+                      <span className="capitalize text-slate-100">
+                        {grievanceData.priority || "—"}
+                      </span>
+                    }
+                  />
+
+                  <SimpleInfo
+                    label="Sentiment"
+                    value={<span className="text-slate-100">{grievanceData.sentiment || "—"}</span>}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {attachments.length > 0 && (
+              <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800 text-slate-200 ring-1 ring-white/10">
+                      <FileText size={19} />
+                    </div>
+
+                    <div>
+                      <h2 className="font-semibold text-white">Attachments</h2>
+                      <p className="text-sm text-slate-300">
+                        Files submitted with this grievance
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="rounded-full border border-white/10 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-200">
+                    {attachments.length}
+                  </span>
+                </div>
+
+                <AttachmentList attachments={attachments} />
+              </section>
+            )}
+
+            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800 text-slate-200 ring-1 ring-white/10">
+                  <Clock3 size={19} />
                 </div>
 
                 <div>
-                  <h2 className="font-semibold text-slate-900">AI Summary</h2>
-
-                  <p className="text-sm text-slate-500">
-                    Automated summary of your grievance
+                  <h2 className="font-semibold text-white">Grievance Progress</h2>
+                  <p className="text-sm text-slate-300">
+                    Track updates and actions taken
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="p-6">
-              <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-5">
-                <p className="text-sm leading-7 text-slate-700">
-                  {grievanceData.summary || "AI summary is not available yet."}
+              {history.length > 0 ? (
+                <HistoryTimeline history={history} />
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-center text-sm text-slate-300">
+                  No updates have been recorded yet.
+                </div>
+              )}
+            </section>
+          </div>
+
+          <aside className="space-y-6">
+            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+              <h2 className="font-semibold text-white">Current Status</h2>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-center">
+                <Badge status={grievanceData.status} />
+
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  {getStatusMessage(grievanceData.status)}
                 </p>
               </div>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <SimpleInfo
+              {grievanceData.resolved_at && (
+                <div className="mt-4 flex items-center gap-3 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20">
+                    <CheckCircle2 size={18} className="text-emerald-300" />
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                      Resolved
+                    </p>
+
+                    <p className="mt-0.5 text-sm font-medium text-emerald-100">
+                      {formatDate(grievanceData.resolved_at)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+              <h2 className="font-semibold text-white">Grievance Information</h2>
+
+              <div className="mt-5 space-y-4">
+                <DetailRow
+                  label="Grievance No."
+                  value={grievanceData.grievance_no || "—"}
+                />
+
+                <DetailRow
+                  label="Department"
+                  value={grievanceData.department_name || "Not assigned"}
+                />
+
+                <DetailRow
                   label="Priority"
                   value={
                     <span className="capitalize">
@@ -274,144 +369,14 @@ function GrievanceDetails() {
                   }
                 />
 
-                <SimpleInfo
-                  label="Sentiment"
-                  value={grievanceData.sentiment || "—"}
+                <DetailRow
+                  label="Submitted"
+                  value={formatDateOnly(grievanceData.submitted_at)}
                 />
               </div>
-            </div>
-          </section>
-
-          {/* Attachments */}
-
-          {attachments.length > 0 && (
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-                    <FileText size={19} />
-                  </div>
-
-                  <div>
-                    <h2 className="font-semibold text-slate-900">
-                      Attachments
-                    </h2>
-
-                    <p className="text-sm text-slate-500">
-                      Files submitted with this grievance
-                    </p>
-                  </div>
-                </div>
-
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                  {attachments.length}
-                </span>
-              </div>
-
-              <AttachmentList attachments={attachments} />
             </section>
-          )}
-
-          {/* History */}
-
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-                <Clock3 size={19} />
-              </div>
-
-              <div>
-                <h2 className="font-semibold text-slate-900">
-                  Grievance Progress
-                </h2>
-
-                <p className="text-sm text-slate-500">
-                  Track updates and actions taken
-                </p>
-              </div>
-            </div>
-
-            {history.length > 0 ? (
-              <HistoryTimeline history={history} />
-            ) : (
-              <div className="rounded-xl bg-slate-50 p-5 text-center text-sm text-slate-500">
-                No updates have been recorded yet.
-              </div>
-            )}
-          </section>
+          </aside>
         </div>
-
-        {/* =================================================
-            RIGHT SIDEBAR
-        ================================================= */}
-
-        <aside className="space-y-6">
-          {/* Current Status */}
-
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="font-semibold text-slate-900">Current Status</h2>
-
-            <div className="mt-4 rounded-xl bg-slate-50 p-5 text-center">
-              <Badge status={grievanceData.status} />
-
-              <p className="mt-3 text-sm leading-6 text-slate-500">
-                {getStatusMessage(grievanceData.status)}
-              </p>
-            </div>
-
-            {grievanceData.resolved_at && (
-              <div className="mt-4 flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-4">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100">
-                  <CheckCircle2 size={18} className="text-green-600" />
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-green-600">
-                    Resolved
-                  </p>
-
-                  <p className="mt-0.5 text-sm font-medium text-green-800">
-                    {formatDate(grievanceData.resolved_at)}
-                  </p>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* Basic Information */}
-
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="font-semibold text-slate-900">
-              Grievance Information
-            </h2>
-
-            <div className="mt-5 space-y-4">
-              <DetailRow
-                label="Grievance No."
-                value={grievanceData.grievance_no || "—"}
-              />
-
-              <DetailRow
-                label="Department"
-                value={grievanceData.department_name || "Not assigned"}
-              />
-
-              <DetailRow
-                label="Priority"
-                value={
-                  <span className="capitalize">
-                    {grievanceData.priority || "—"}
-                  </span>
-                }
-              />
-
-              <DetailRow
-                label="Submitted"
-                value={formatDateOnly(grievanceData.submitted_at)}
-              />
-            </div>
-          </section>
-        </aside>
       </div>
     </div>
   );
