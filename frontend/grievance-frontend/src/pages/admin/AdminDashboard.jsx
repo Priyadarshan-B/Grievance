@@ -8,6 +8,7 @@ import DepartmentChart from "../../components/dashboard/DepartmentChart";
 import PriorityChart from "../../components/dashboard/PriorityChart";
 import SentimentChart from "../../components/dashboard/SentimentChart";
 import RecentGrievances from "../../components/dashboard/RecentGrievances";
+import DepartmentPerformance from "../../components/dashboard/DepartmentPerformance";
 
 function AdminDashboard() {
   const { dashboard, loading } = useAdminDashboard();
@@ -67,6 +68,16 @@ function AdminDashboard() {
         >
           <DepartmentChart data={dashboard?.departmentWise ?? []} />
           <PriorityChart data={dashboard?.priorityWise ?? []} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <DepartmentPerformance
+            data={dashboard?.departmentPerformance ?? []}
+          />
         </motion.div>
 
         <motion.div
