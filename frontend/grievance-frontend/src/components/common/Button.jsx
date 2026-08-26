@@ -10,9 +10,9 @@ function Button({
   disabled = false,
 }) {
   const styles = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
+    primary: "bg-cyan-500 hover:bg-cyan-400 text-slate-950",
 
-    secondary: "bg-slate-100 hover:bg-slate-200 text-slate-700",
+    secondary: "bg-slate-700 hover:bg-slate-600 text-white",
 
     danger: "bg-red-600 hover:bg-red-700 text-white",
   };

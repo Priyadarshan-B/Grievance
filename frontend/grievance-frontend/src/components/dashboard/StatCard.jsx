@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
 
-function StatCard({ title, value, icon: Icon, color = "from-blue-500 to-blue-600" }) {
+function StatCard({ title, value, icon: Icon, tone = "cyan" }) {
+  const toneStyles = {
+    cyan: "from-[#1E293B] via-[#1E293B] to-[#164E63] border-t-cyan-400/80",
+    teal: "from-[#1E293B] via-[#1E293B] to-[#14532D] border-t-emerald-400/80",
+    amber: "from-[#1E293B] via-[#1E293B] to-[#78350F] border-t-amber-400/80",
+    rose: "from-[#1E293B] via-[#1E293B] to-[#881337] border-t-rose-400/80",
+  };
   const containerVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.9 },
     visible: {
@@ -24,29 +30,30 @@ function StatCard({ title, value, icon: Icon, color = "from-blue-500 to-blue-600
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      whileHover={{ y: -8 }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${color} p-6 shadow-[0_18px_45px_rgba(15,23,42,0.22)] hover:shadow-[0_22px_50px_rgba(15,23,42,0.3)] transition-all duration-300 backdrop-blur-sm border border-white/30 group`}>
-        <div className="absolute -top-8 -right-8 w-32 h-32 bg-white opacity-0 rounded-full group-hover:opacity-15 transition-all duration-300 blur-3xl"></div>
+      <div className={`group relative flex min-h-[120px] flex-col justify-between gap-3 overflow-hidden rounded-2xl border border-[#334155] border-t-2 bg-gradient-to-br p-4 text-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out hover:border-cyan-500/60 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.65)] ${toneStyles[tone] || toneStyles.cyan}`}>
+        <div className="relative z-10 min-w-0">
+          <p className="break-words text-sm font-semibold uppercase leading-5 tracking-[0.08em] opacity-95">
+            {title}
+          </p>
+        </div>
 
-        <div className="relative z-10 flex items-center justify-between gap-4">
-          <div className="text-white">
-            <p className="text-sm font-semibold opacity-95 tracking-[0.08em] uppercase">{title}</p>
-            <h2 className="mt-3 text-4xl md:text-5xl font-black drop-shadow-lg leading-none">
-              {value}
-            </h2>
-          </div>
+        <div className="relative z-10 flex min-w-0 items-end justify-between gap-3">
+          <h2 className="min-w-0 flex-1 break-words text-3xl font-black leading-none drop-shadow-lg sm:text-3xl 2xl:text-4xl">
+            {value}
+          </h2>
 
           <motion.div
-            className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900/20 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_12px_30px_rgba(15,23,42,0.2)] backdrop-blur-sm border border-white/30"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_30px_rgba(15,23,42,0.35)] sm:h-11 sm:w-11"
             variants={iconVariants}
             whileHover="hover"
           >
-            <Icon size={30} className="drop-shadow-[0_2px_8px_rgba(255,255,255,0.35)]" />
+            <Icon size={20} className="drop-shadow-[0_2px_8px_rgba(255,255,255,0.35)]" />
           </motion.div>
         </div>
 
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
       </div>
     </motion.div>
   );

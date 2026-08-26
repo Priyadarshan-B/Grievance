@@ -19,34 +19,30 @@ function Profile() {
 
   const trustColor =
     trustScore >= 80
-      ? "bg-gradient-to-r from-emerald-500 to-green-500"
+      ? "bg-gradient-to-r from-emerald-400 to-teal-400"
       : trustScore >= 50
-        ? "bg-gradient-to-r from-yellow-500 to-amber-500"
-        : "bg-gradient-to-r from-red-500 to-rose-500";
+        ? "bg-gradient-to-r from-amber-400 to-orange-400"
+        : "bg-gradient-to-r from-rose-400 to-red-400";
 
   const trustStatus =
     trustScore >= 80 ? "Excellent" : trustScore >= 50 ? "Fair" : "Low";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)]">
-      <div className="absolute -top-20 left-0 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl" />
-      <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-400/20 blur-3xl" />
-
-      <div className="relative z-10 mx-auto max-w-6xl space-y-6 p-6">
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100">
+      <div className="mx-auto max-w-6xl space-y-6 p-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-white/60 bg-white/10 p-5 shadow-[0_20px_60px_rgba(59,130,246,0.12)] backdrop-blur-xl"
+          className="rounded-3xl border border-violet-400/30 border-t-2 border-t-violet-400/80 bg-gradient-to-br from-violet-950/70 via-[#1E293B] to-cyan-950/30 p-5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-300/40 bg-violet-500/20 text-violet-200 shadow-lg shadow-violet-500/20">
               <User size={22} />
             </div>
 
             <div>
               <h1 className="text-3xl font-bold text-white">My Profile</h1>
-              <p className="mt-1 text-sm text-slate-200">
+              <p className="mt-1 text-sm text-slate-300">
                 View your profile and AI account health.
               </p>
             </div>
@@ -56,10 +52,10 @@ function Profile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-3xl border border-white/15 bg-slate-950/40 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl"
+          className="overflow-hidden rounded-3xl border border-cyan-400/25 border-t-2 border-t-cyan-400/70 bg-gradient-to-br from-cyan-950/40 via-[#1E293B] to-[#1E293B] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"
         >
           <div className="flex flex-col items-center gap-5 border-b border-white/10 p-8 md:flex-row">
-            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-4xl font-bold text-white shadow-lg shadow-cyan-500/30">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-cyan-300/40 bg-gradient-to-br from-cyan-400 to-teal-400 text-4xl font-bold text-slate-950 shadow-lg shadow-cyan-500/30">
               {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
             </div>
 
@@ -72,7 +68,7 @@ function Profile() {
             </div>
           </div>
 
-          <div className="grid gap-6 p-8 md:grid-cols-2">
+          <div className="grid gap-6 border-t border-[#334155] p-8 md:grid-cols-2">
             <InfoCard
               icon={<User size={20} />}
               title="Full Name"
@@ -116,9 +112,9 @@ function Profile() {
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl lg:col-span-2">
+          <div className="rounded-3xl border border-emerald-400/25 border-t-2 border-t-emerald-400/80 bg-gradient-to-br from-emerald-950/45 via-[#1E293B] to-cyan-950/25 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] lg:col-span-2">
             <div className="mb-4 flex items-center gap-2 text-white">
-              <Star className="text-yellow-400" />
+              <Star className="text-amber-300" />
               <h2 className="text-xl font-semibold">AI Trust Score</h2>
             </div>
 
@@ -148,23 +144,26 @@ function Profile() {
               icon={<Flag className="text-red-400" />}
               title="AI Flags"
               value={user?.ai_flag_count ?? 0}
+              tone="rose"
             />
 
             <SmallCard
               icon={<AlertTriangle className="text-yellow-400" />}
               title="Warnings"
               value={user?.warning_count ?? 0}
+              tone="amber"
             />
 
             <SmallCard
               icon={<ShieldCheck className="text-emerald-400" />}
               title="Status"
               value={user?.is_active ? "Active" : "Suspended"}
+              tone="teal"
             />
           </div>
         </div>
 
-        <div className="rounded-3xl border border-cyan-400/20 bg-[linear-gradient(135deg,rgba(14,116,144,0.2),rgba(59,130,246,0.1),rgba(15,23,42,0.6))] p-6 shadow-[0_20px_60px_rgba(34,211,238,0.08)] backdrop-blur-xl">
+        <div className="rounded-3xl border border-cyan-400/30 border-t-2 border-t-cyan-400/80 bg-gradient-to-br from-cyan-950/60 via-[#1E293B] to-violet-950/30 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)]">
           <div className="mb-3 flex items-center gap-2 text-cyan-200">
             <Bot className="text-cyan-300" />
             <h2 className="text-lg font-semibold">AI Account Evaluation</h2>
@@ -189,7 +188,7 @@ function Profile() {
 
 function InfoCard({ icon, title, value }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-inner shadow-slate-950/30">
+    <div className="rounded-2xl border border-violet-400/20 bg-gradient-to-br from-violet-950/35 to-slate-800/80 p-5 shadow-inner shadow-slate-950/30">
       <div className="mb-2 flex items-center gap-2 text-cyan-300">
         {icon}
         <span className="font-medium text-slate-200">{title}</span>
@@ -200,9 +199,15 @@ function InfoCard({ icon, title, value }) {
   );
 }
 
-function SmallCard({ icon, title, value }) {
+function SmallCard({ icon, title, value, tone = "teal" }) {
+  const toneStyles = {
+    rose: "border-rose-400/30 from-rose-950/45 to-slate-800/80",
+    amber: "border-amber-400/30 from-amber-950/45 to-slate-800/80",
+    teal: "border-emerald-400/30 from-emerald-950/45 to-slate-800/80",
+  };
+
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5 shadow-[0_20px_45px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+    <div className={`rounded-2xl border bg-gradient-to-br p-5 shadow-[0_20px_45px_rgba(15,23,42,0.45)] ${toneStyles[tone] || toneStyles.teal}`}>
       <div className="mb-2 flex items-center gap-2 text-slate-200">
         {icon}
         <span className="font-medium">{title}</span>

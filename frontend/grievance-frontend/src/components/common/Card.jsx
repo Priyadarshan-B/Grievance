@@ -7,17 +7,17 @@ function Card({
   variant = "default",
 }) {
   const variants = {
-    default: "bg-gradient-to-br from-white/80 to-slate-50/80 border border-white/50",
-    primary: "bg-gradient-to-br from-blue-100/60 via-purple-100/60 to-pink-100/60 border border-white/40",
-    success: "bg-gradient-to-br from-green-100/60 to-teal-100/60 border border-green-200/40",
-    warning: "bg-gradient-to-br from-orange-100/60 to-yellow-100/60 border border-orange-200/40",
+    default: "bg-gradient-to-br from-[#1E293B] via-[#1E293B] to-[#164E63] border border-[#334155] before:bg-cyan-400/70",
+    primary: "bg-gradient-to-br from-[#1E293B] via-[#1E293B] to-[#164E63] border border-[#334155] before:bg-cyan-400/70",
+    success: "bg-gradient-to-br from-[#1E293B] via-[#1E293B] to-[#14532D] border border-[#334155] before:bg-emerald-400/70",
+    warning: "bg-gradient-to-br from-[#1E293B] via-[#1E293B] to-[#78350F] border border-[#334155] before:bg-amber-400/70",
   };
 
   return (
     <motion.div
-      whileHover={hoverable ? { y: -6, scale: 1.02 } : {}}
-      transition={{ duration: 0.2 }}
-      className={`${variants[variant]} rounded-xl shadow-xl backdrop-blur-xl p-6 text-slate-800 hover:shadow-2xl transition-all duration-300 ${className}`}
+      whileHover={hoverable ? { y: -4, scale: 1.02 } : {}}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className={`${variants[variant]} relative overflow-hidden rounded-xl p-6 text-slate-100 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] before:absolute before:inset-x-0 before:top-0 before:h-px transition-all duration-300 ease-in-out hover:border-cyan-500/60 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.65)] ${className}`}
     >
       {children}
     </motion.div>

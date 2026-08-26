@@ -88,7 +88,7 @@ function GrievanceForm() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-emerald-400/30 bg-[linear-gradient(135deg,rgba(16,185,129,0.18),rgba(15,118,110,0.08),rgba(15,23,42,0.8))] p-6 shadow-[0_20px_60px_rgba(16,185,129,0.15)] backdrop-blur-xl"
+          className="rounded-3xl border border-emerald-400/40 border-t-2 border-t-emerald-300/80 bg-gradient-to-br from-emerald-950/80 via-[#1E293B] to-cyan-950/40 p-6 shadow-[0_25px_50px_-12px_rgba(16,185,129,0.28)]"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/40">
@@ -106,14 +106,14 @@ function GrievanceForm() {
           </div>
 
           <div className="mt-5 grid gap-4 text-sm text-slate-200 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-4">
+            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-950/30 p-4">
               <p className="text-slate-400">Grievance No:</p>
               <p className="mt-1 font-semibold text-white">
                 {aiResult.grievance.grievance_no}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-4">
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-950/30 p-4">
               <p className="text-slate-400">Status:</p>
               <p className="mt-1 font-semibold text-white">
                 {aiResult.grievance.status}
@@ -121,7 +121,7 @@ function GrievanceForm() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-white/10 bg-slate-900/40 p-5">
+          <div className="mt-6 rounded-2xl border border-violet-400/20 bg-violet-950/20 p-5">
             <div className="mb-4 flex items-center gap-2 text-white">
               <Sparkles className="h-5 w-5 text-cyan-300" />
               <h3 className="text-xl font-semibold">AI Analysis</h3>
@@ -149,28 +149,28 @@ function GrievanceForm() {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="rounded-2xl border border-rose-400/20 bg-rose-950/25 p-4">
                   <p className="text-slate-400">Spam Score</p>
                   <h2 className="mt-2 text-2xl font-bold text-white">
                     {aiResult.ai.spam_score}%
                   </h2>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="rounded-2xl border border-orange-400/20 bg-orange-950/25 p-4">
                   <p className="text-slate-400">Abuse Score</p>
                   <h2 className="mt-2 text-2xl font-bold text-white">
                     {aiResult.ai.abuse_score}%
                   </h2>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="rounded-2xl border border-emerald-400/20 bg-emerald-950/25 p-4">
                   <p className="text-slate-400">Legitimacy</p>
                   <h2 className="mt-2 text-2xl font-bold text-emerald-300">
                     {aiResult.ai.legitimacy_score}%
                   </h2>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <div className="rounded-2xl border border-cyan-400/20 bg-cyan-950/25 p-4">
                   <p className="text-slate-400">Trust Score</p>
                   <h2 className="mt-2 text-2xl font-bold text-cyan-300">
                     {aiResult.trustScore}/100
@@ -208,10 +208,10 @@ function GrievanceForm() {
           onSubmit={handleSubmit(onSubmit)}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-5 rounded-3xl border border-white/20 bg-slate-950/40 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl"
+          className="space-y-5 rounded-3xl border border-[#334155] border-t-2 border-t-violet-400/80 bg-gradient-to-br from-violet-950/25 via-[#1E293B] to-cyan-950/25 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"
         >
           <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-300/40 bg-violet-500/20 text-violet-200 shadow-lg shadow-violet-500/20">
               <ShieldCheck className="h-5 w-5" />
             </div>
 
@@ -228,7 +228,7 @@ function GrievanceForm() {
               {...register("title", {
                 required: "Title is required",
               })}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
+              className="w-full rounded-2xl border border-cyan-400/20 bg-cyan-950/25 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-500/25"
               placeholder="Brief issue title"
             />
             <p className="mt-1 text-sm text-red-300">{errors.title?.message}</p>
@@ -243,7 +243,7 @@ function GrievanceForm() {
               {...register("description", {
                 required: "Description is required",
               })}
-              className="w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
+              className="w-full rounded-2xl border border-cyan-400/20 bg-cyan-950/25 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-500/25"
               placeholder="Describe the issue in detail..."
             />
             <p className="mt-1 text-sm text-red-300">
@@ -256,7 +256,7 @@ function GrievanceForm() {
               Attachments
             </label>
 
-            <div className="rounded-2xl border border-dashed border-cyan-400/40 bg-slate-900/50 p-4">
+            <div className="rounded-2xl border border-dashed border-amber-400/40 bg-amber-950/25 p-4">
               <input
                 type="file"
                 multiple
@@ -275,7 +275,7 @@ function GrievanceForm() {
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-900/60 p-3"
+                    className="flex items-center justify-between rounded-2xl border border-emerald-400/20 bg-emerald-950/25 p-3"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-300">
@@ -306,7 +306,7 @@ function GrievanceForm() {
           <button
             type="submit"
             disabled={createMutation.isPending || uploadMutation.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-teal-400 px-6 py-3 text-base font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {createMutation.isPending || uploadMutation.isPending ? (
               <>

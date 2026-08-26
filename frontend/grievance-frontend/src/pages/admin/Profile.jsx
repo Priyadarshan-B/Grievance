@@ -5,12 +5,9 @@ function Profile() {
   const { user } = useAuth();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.18),transparent_28%),linear-gradient(135deg,#020817_0%,#0f172a_22%,#111827_48%,#1f2937_100%)] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="absolute -top-24 left-0 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-violet-400/20 blur-3xl" />
-
-      <div className="relative z-10 mx-auto max-w-5xl space-y-6">
-        <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+    <div className="min-h-screen bg-[#0B0F19] px-4 py-6 text-slate-100 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div className="rounded-3xl border border-violet-400/30 border-t-2 border-t-violet-400/80 bg-gradient-to-br from-violet-950/65 via-[#1E293B] to-cyan-950/30 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)]">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-300">
             Profile
           </p>
@@ -22,8 +19,8 @@ function Profile() {
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-700/80 bg-slate-900/70 shadow-[0_18px_45px_rgba(15,23,42,0.28)] backdrop-blur-xl">
-          <div className="flex flex-col items-center gap-4 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 via-sky-900/60 to-violet-900/50 p-8 md:flex-row">
+        <div className="overflow-hidden rounded-3xl border border-cyan-400/25 border-t-2 border-t-cyan-400/80 bg-gradient-to-br from-cyan-950/35 via-[#1E293B] to-violet-950/25 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]">
+          <div className="flex flex-col items-center gap-4 border-b border-[#334155] bg-gradient-to-r from-cyan-950/70 via-slate-800/80 to-violet-950/60 p-8 md:flex-row">
             <img
               src={
                 user?.avatar_url ||
@@ -40,7 +37,7 @@ function Profile() {
 
               <p className="mt-1 text-slate-300">{user?.email}</p>
 
-              <span className="mt-3 inline-flex rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20">
+              <span className="mt-3 inline-flex rounded-full border border-cyan-300/30 bg-cyan-500/15 px-3 py-1 text-sm font-semibold text-cyan-100 shadow-lg shadow-cyan-500/20">
                 {user?.role === "super_admin"
                   ? "Super Admin"
                   : "Department Admin"}
@@ -48,7 +45,7 @@ function Profile() {
             </div>
           </div>
 
-          <div className="grid gap-6 p-8 md:grid-cols-2">
+          <div className="grid gap-6 border-t border-[#334155] p-8 md:grid-cols-2">
             <InfoCard
               icon={<User size={20} />}
               title="Full Name"
@@ -93,7 +90,7 @@ function Profile() {
 
 function InfoCard({ icon, title, value }) {
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-800/80 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.16)]">
+    <div className="rounded-2xl border border-violet-400/20 bg-gradient-to-br from-violet-950/35 to-slate-800/80 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.3)] transition duration-300 hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-xl">
       <div className="mb-3 flex items-center gap-2 text-cyan-300">
         {icon}
         <span className="font-medium text-slate-200">{title}</span>

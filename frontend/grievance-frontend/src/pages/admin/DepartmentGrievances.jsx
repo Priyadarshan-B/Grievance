@@ -432,11 +432,8 @@ function DepartmentGrievances() {
                       </td>
 
                       {/* Status */}
-                      <td className="overflow-hidden px-4 py-4">
-                        <div
-                          className="truncate uppercase"
-                          title={g.status ?? "—"}
-                        >
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <div className="whitespace-nowrap" title={g.status ?? "—"}>
                           <Badge status={g.status} />
                         </div>
                       </td>

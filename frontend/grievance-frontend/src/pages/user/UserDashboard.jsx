@@ -32,7 +32,7 @@ function Dashboard() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
+      <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-6 text-red-200">
         Failed to load dashboard.
       </div>
     );
@@ -66,10 +66,10 @@ function Dashboard() {
 
   const trustStatusClass =
     trustScore >= 80
-      ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+      ? "bg-emerald-500/15 text-emerald-300 border-emerald-400/30"
       : trustScore >= 50
-        ? "bg-amber-100 text-amber-700 border-amber-200"
-        : "bg-red-100 text-red-700 border-red-200";
+        ? "bg-amber-500/15 text-amber-300 border-amber-400/30"
+        : "bg-red-500/15 text-red-300 border-red-400/30";
 
   const trustProgressClass =
     trustScore >= 80
@@ -121,15 +121,8 @@ function Dashboard() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)]">
-      {/* Background decoration */}
-      <div className="absolute -top-20 left-0 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl" />
-      <div className="absolute bottom-10 left-1/3 h-80 w-80 rounded-full bg-violet-400/20 blur-3xl" />
-
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.10),transparent_20%,rgba(125,211,252,0.15),transparent_75%)]" />
-
-      <div className="relative z-10 space-y-8 p-4 sm:p-6">
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100">
+      <div className="space-y-8 p-4 sm:p-6">
         {/* ------------------------------------------------ */}
         {/* HEADER */}
         {/* ------------------------------------------------ */}
@@ -138,7 +131,7 @@ function Dashboard() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="rounded-3xl border border-white/60 bg-white/50 p-5 shadow-[0_20px_60px_rgba(59,130,246,0.08)] backdrop-blur-xl">
+          <div className="rounded-3xl border border-[#334155] border-t-2 border-t-cyan-400/80 bg-[#1E293B] p-5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
             <PageHeader
               title={`${getGreeting()}, ${user?.first_name || "User"}!`}
               subtitle="Track your grievances and keep an eye on your AI account health."
@@ -175,7 +168,7 @@ function Dashboard() {
                 title="Total"
                 value={total}
                 icon={ClipboardList}
-                color="bg-gradient-to-r from-blue-500 to-blue-600"
+                  tone="cyan"
               />
             </motion.div>
 
@@ -184,7 +177,7 @@ function Dashboard() {
                 title="Submitted"
                 value={submitted}
                 icon={AlertCircle}
-                color="bg-gradient-to-r from-cyan-500 to-blue-500"
+                  tone="cyan"
               />
             </motion.div>
 
@@ -193,7 +186,7 @@ function Dashboard() {
                 title="Progress"
                 value={inProgress}
                 icon={Clock3}
-                color="bg-gradient-to-r from-yellow-500 to-orange-500"
+                  tone="amber"
               />
             </motion.div>
 
@@ -202,7 +195,7 @@ function Dashboard() {
                 title="Resolved"
                 value={resolved}
                 icon={CheckCircle}
-                color="bg-gradient-to-r from-green-500 to-emerald-500"
+                  tone="teal"
               />
             </motion.div>
 
@@ -211,16 +204,16 @@ function Dashboard() {
                 title="Rejected"
                 value={rejected}
                 icon={AlertCircle}
-                color="bg-gradient-to-r from-red-500 to-pink-500"
+                  tone="rose"
               />
             </motion.div>
           </motion.div>
 
-          <div className="overflow-hidden rounded-3xl mt-10 border border-white/20 bg-slate-950/45 shadow-[0_30px_80px_rgba(15,23,42,0.55)] backdrop-blur-xl">
+          <div className="mt-10 overflow-hidden rounded-3xl border border-cyan-400/30 border-t-2 border-t-cyan-400/80 bg-[#1E293B] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
             <div className="border-b border-white/10 p-5 sm:p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 shadow-lg shadow-cyan-500/20">
                     <Bot size={23} />
                   </div>
 
@@ -246,7 +239,7 @@ function Dashboard() {
 
             <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-3">
               {/* Trust score */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 lg:col-span-2">
+              <div className="rounded-2xl border border-[#334155] bg-slate-800/60 p-5 lg:col-span-2">
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-slate-300">
@@ -359,10 +352,10 @@ function Dashboard() {
           transition={{ delay: 0.6 }}
         >
           {/* Quick Actions */}
-          <div className="rounded-3xl border border-white/70 bg-white/70 p-2 shadow-[0_20px_60px_rgba(59,130,246,0.08)] backdrop-blur-xl">
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50">
-              <div className="border-b border-slate-200 px-6 py-4">
-                <h2 className="text-lg font-semibold text-slate-800">
+          <div className="rounded-3xl border border-[#334155] border-t-2 border-t-cyan-400/70 bg-[#1E293B] p-2 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <div className="rounded-2xl border border-[#334155] bg-[#1E293B]">
+              <div className="border-b border-[#334155] px-6 py-4">
+                <h2 className="text-lg font-semibold text-white">
                   Quick Actions
                 </h2>
               </div>
@@ -370,43 +363,43 @@ function Dashboard() {
               <div className="grid gap-4 p-6 sm:grid-cols-3">
                 <Link
                   to="/user/grievance/new"
-                  className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 transition duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md"
+                  className="rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-950/80 to-slate-800/80 p-5 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-300/70 hover:shadow-2xl"
                 >
-                  <Plus className="mb-3 text-blue-600" />
+                  <Plus className="mb-3 text-cyan-300" />
 
-                  <h3 className="font-semibold text-slate-800">
+                  <h3 className="font-semibold text-white">
                     New Grievance
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     Submit a new grievance.
                   </p>
                 </Link>
 
                 <Link
                   to="/user/grievances"
-                  className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-green-50 p-5 transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-md"
+                  className="rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-emerald-950/80 to-slate-800/80 p-5 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:border-emerald-300/70 hover:shadow-2xl"
                 >
-                  <FileText className="mb-3 text-emerald-600" />
+                  <FileText className="mb-3 text-emerald-300" />
 
-                  <h3 className="font-semibold text-slate-800">
+                  <h3 className="font-semibold text-white">
                     My Grievances
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     View all submitted grievances.
                   </p>
                 </Link>
 
                 <Link
                   to="/user/profile"
-                  className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-purple-50 p-5 transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-md"
+                  className="rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-950/70 to-slate-800/80 p-5 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:border-violet-300/70 hover:shadow-2xl"
                 >
-                  <User className="mb-3 text-violet-600" />
+                  <User className="mb-3 text-violet-300" />
 
-                  <h3 className="font-semibold text-slate-800">My Profile</h3>
+                  <h3 className="font-semibold text-white">My Profile</h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     View your profile details.
                   </p>
                 </Link>
@@ -415,33 +408,33 @@ function Dashboard() {
           </div>
 
           {/* Resolution Rate */}
-          <div className="rounded-3xl border border-white/70 bg-white/70 p-2 shadow-[0_20px_60px_rgba(59,130,246,0.08)] backdrop-blur-xl">
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-emerald-50 via-white to-slate-50">
-              <div className="border-b border-slate-200 px-6 py-4">
-                <h2 className="text-lg font-semibold text-slate-800">
+          <div className="rounded-3xl border border-[#334155] border-t-2 border-t-emerald-400/70 bg-[#1E293B] p-2 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <div className="rounded-2xl border border-[#334155] bg-[#1E293B]">
+              <div className="border-b border-[#334155] px-6 py-4">
+                <h2 className="text-lg font-semibold text-white">
                   Resolution Rate
                 </h2>
               </div>
 
               <div className="p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-slate-600">Overall Resolution</span>
+                  <span className="text-slate-400">Overall Resolution</span>
 
-                  <span className="text-3xl font-bold text-emerald-600">
+                  <span className="text-3xl font-bold text-cyan-300">
                     {resolutionRate}%
                   </span>
                 </div>
 
-                <div className="mt-6 h-4 overflow-hidden rounded-full bg-slate-200">
+                <div className="mt-6 h-4 overflow-hidden rounded-full bg-slate-700">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${resolutionRate}%` }}
                     transition={{ duration: 1 }}
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-500"
+                    className="h-full rounded-full bg-cyan-400"
                   />
                 </div>
 
-                <p className="mt-4 text-sm text-slate-500">
+                <p className="mt-4 text-sm text-slate-400">
                   {resolved} of {total} grievances have been resolved.
                 </p>
               </div>
@@ -458,47 +451,47 @@ function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <div className="rounded-3xl border border-white/70 bg-white/70 p-2 shadow-[0_20px_60px_rgba(251,191,36,0.08)] backdrop-blur-xl">
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-amber-50 via-white to-yellow-50">
-              <div className="flex items-center gap-3 border-b border-slate-200 px-6 py-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+          <div className="rounded-3xl border border-[#334155] border-t-2 border-t-amber-400/70 bg-[#1E293B] p-2 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <div className="rounded-2xl border border-[#334155] bg-[#1E293B]">
+              <div className="flex items-center gap-3 border-b border-[#334155] px-6 py-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300">
                   <Lightbulb className="h-5 w-5" />
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-800">
+                  <h2 className="text-lg font-semibold text-white">
                     Keep Your Account Healthy
                   </h2>
 
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-slate-400">
                     Simple ways to maintain a good AI trust score
                   </p>
                 </div>
               </div>
 
               <div className="grid gap-4 p-6 md:grid-cols-3">
-                <div className="rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 to-cyan-50 p-4 text-slate-700">
-                  <p className="font-semibold">
+                <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-br from-cyan-950/60 to-slate-800/80 p-4 text-white">
+                  <p className="font-semibold text-cyan-100">
                     📎 Attach supporting documents
                   </p>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     Add relevant evidence whenever possible.
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50 p-4 text-slate-700">
-                  <p className="font-semibold">📝 Describe the issue clearly</p>
+                <div className="rounded-2xl border border-emerald-400/25 bg-gradient-to-br from-emerald-950/60 to-slate-800/80 p-4 text-white">
+                  <p className="font-semibold text-emerald-100">📝 Describe the issue clearly</p>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     Provide accurate and detailed information.
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-amber-100 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 text-slate-700">
-                  <p className="font-semibold">🔍 Avoid duplicate complaints</p>
+                <div className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-950/60 to-slate-800/80 p-4 text-white">
+                  <p className="font-semibold text-amber-100">🔍 Avoid duplicate complaints</p>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     Track an existing grievance before creating another one.
                   </p>
                 </div>
@@ -516,28 +509,28 @@ function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          <div className="rounded-3xl border border-white/70 bg-white/70 p-2 shadow-[0_20px_60px_rgba(251,191,36,0.08)] backdrop-blur-xl">
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-amber-50 via-white to-yellow-50">
-              <div className="flex items-center gap-2 border-b border-slate-200 px-6 py-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+          <div className="rounded-3xl border border-[#334155] bg-[#1E293B] p-2 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <div className="rounded-2xl border border-[#334155] bg-[#1E293B]">
+              <div className="flex items-center gap-2 border-b border-[#334155] px-6 py-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-500/15 text-amber-300">
                   <Lightbulb className="h-5 w-5" />
                 </div>
 
-                <h2 className="text-lg font-semibold text-slate-800">
+                <h2 className="text-lg font-semibold text-white">
                   Helpful Tips
                 </h2>
               </div>
 
               <div className="grid gap-4 p-6 md:grid-cols-3">
-                <div className="rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 to-cyan-50 p-4 text-slate-700">
+                <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-br from-cyan-950/60 to-slate-800/80 p-4 text-white">
                   📎 Attach supporting documents whenever possible.
                 </div>
 
-                <div className="rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50 p-4 text-slate-700">
+                <div className="rounded-2xl border border-emerald-400/25 bg-gradient-to-br from-emerald-950/60 to-slate-800/80 p-4 text-white">
                   📝 Provide a clear and detailed grievance description.
                 </div>
 
-                <div className="rounded-2xl border border-amber-100 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 text-slate-700">
+                <div className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-950/60 to-slate-800/80 p-4 text-white">
                   🔍 Track grievance status regularly from "My Grievances".
                 </div>
               </div>

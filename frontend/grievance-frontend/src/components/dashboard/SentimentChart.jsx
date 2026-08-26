@@ -21,8 +21,8 @@ const COLORS = {
 
 function SentimentChart({ data = [] }) {
   return (
-    <Card>
-      <h2 className="mb-5 text-lg font-bold text-slate-900">Sentiment Analysis</h2>
+    <Card variant="warning">
+      <h2 className="mb-5 text-lg font-bold text-white">Sentiment Analysis</h2>
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -39,8 +39,8 @@ function SentimentChart({ data = [] }) {
               ))}
             </Pie>
 
-            <Tooltip contentStyle={{ borderRadius: 12, borderColor: '#cbd5e1', color: '#0f172a' }} />
-            <Legend wrapperStyle={{ color: '#0f172a', fontSize: '12px' }} />
+            <Tooltip contentStyle={{ borderRadius: 12, borderColor: "#334155", backgroundColor: "#1E293B", color: "#F9FAFB" }} />
+            <Legend wrapperStyle={{ color: "#94A3B8", fontSize: "12px" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

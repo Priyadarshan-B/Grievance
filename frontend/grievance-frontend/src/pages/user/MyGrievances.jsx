@@ -98,18 +98,18 @@ function MyGrievances() {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+      <div className="rounded-2xl border border-red-400/30 bg-gradient-to-br from-red-950/60 to-slate-800/80 p-6 shadow-lg shadow-red-950/20">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100">
-            <XCircle className="text-red-600" size={21} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-400/30 bg-red-500/15">
+            <XCircle className="text-red-300" size={21} />
           </div>
 
           <div>
-            <h2 className="font-semibold text-red-700">
+            <h2 className="font-semibold text-red-100">
               Failed to load grievances
             </h2>
 
-            <p className="mt-1 text-sm text-red-600">
+            <p className="mt-1 text-sm text-red-200">
               {error?.response?.data?.message ||
                 error?.message ||
                 "Something went wrong while fetching grievances."}
@@ -156,21 +156,17 @@ function MyGrievances() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)]">
-      <div className="absolute -top-20 left-0 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl" />
-      <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-400/20 blur-3xl" />
-
-      <div className="relative z-10 space-y-6 p-6">
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100">
+      <div className="space-y-6 p-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-white/60 bg-white/10 p-5 shadow-[0_20px_60px_rgba(59,130,246,0.12)] backdrop-blur-xl"
+          className="rounded-3xl border border-cyan-400/30 border-t-2 border-t-cyan-400/80 bg-gradient-to-br from-cyan-950/70 via-[#1E293B] to-violet-950/30 p-5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
         >
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-300/40 bg-cyan-500/20 text-cyan-200 shadow-lg shadow-cyan-500/20">
                   <FileText size={22} />
                 </div>
 
@@ -179,7 +175,7 @@ function MyGrievances() {
                     My Grievances
                   </h1>
 
-                  <p className="mt-1 text-sm text-slate-200">
+                  <p className="mt-1 text-sm text-slate-300">
                     View and track all grievances you have submitted.
                   </p>
                 </div>
@@ -204,7 +200,7 @@ function MyGrievances() {
         </motion.div>
 
         {filteredGrievances.length > 0 && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-cyan-400/20 bg-slate-900/40 px-5 py-4 text-slate-100 shadow-[0_12px_30px_rgba(8,145,178,0.08)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-2xl border border-emerald-400/25 bg-gradient-to-r from-emerald-950/50 to-cyan-950/40 px-5 py-4 text-slate-100 shadow-[0_12px_30px_rgba(8,145,178,0.12)] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-white">
                 {filteredGrievances.length}{" "}
@@ -229,7 +225,7 @@ function MyGrievances() {
         )}
 
         {!filteredGrievances.length ? (
-          <div className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.6)] backdrop-blur-xl">
+          <div className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-950/35 to-slate-800/80 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)]">
             <EmptyState
               title="No grievances found"
               description={
@@ -241,10 +237,10 @@ function MyGrievances() {
           </div>
         ) : (
           <>
-            <div className="hidden overflow-hidden rounded-3xl border border-white/15 bg-slate-950/40 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur-xl lg:block">
+            <div className="hidden overflow-hidden rounded-3xl border border-[#334155] border-t-2 border-t-violet-400/70 bg-gradient-to-br from-violet-950/20 to-[#1E293B] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] lg:block">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="border-b border-white/10 bg-slate-900/60">
+                  <thead className="border-b border-[#334155] bg-slate-900/80">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
                         Grievance
@@ -268,11 +264,11 @@ function MyGrievances() {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-[#334155]/60">
                     {paginatedGrievances.map((item) => (
                       <tr
                         key={item.id}
-                        className="group transition hover:bg-slate-900/70"
+                        className="group transition hover:bg-cyan-950/30"
                       >
                         <td className="max-w-[420px] px-6 py-5">
                           <div className="flex items-start gap-3">
@@ -295,7 +291,7 @@ function MyGrievances() {
                           </div>
                         </td>
 
-                        <td className="px-6 py-5">
+                        <td className="whitespace-nowrap px-6 py-5">
                           <div className="flex items-center gap-2 text-sm text-slate-200">
                             <Building2 size={16} className="text-slate-400" />
 
@@ -358,7 +354,7 @@ function MyGrievances() {
                   key={item.id}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-3xl border border-white/10 bg-slate-950/45 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.55)] backdrop-blur-xl"
+                  className="rounded-3xl border border-[#334155] border-t-2 border-t-violet-400/70 bg-gradient-to-br from-violet-950/20 to-[#1E293B] p-5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/20">
@@ -382,7 +378,7 @@ function MyGrievances() {
                     </div>
                   </div>
 
-                  <div className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+                  <div className="mt-5 grid gap-3 rounded-2xl border border-amber-400/20 bg-amber-950/20 p-4">
                     <div className="flex items-center justify-between gap-4 text-sm">
                       <span className="flex items-center gap-2 text-slate-400">
                         <Building2 size={15} />
@@ -425,7 +421,7 @@ function MyGrievances() {
                 </motion.div>
               ))}
 
-              <div className="rounded-3xl border border-white/10 bg-slate-950/40 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.55)] backdrop-blur-xl">
+              <div className="rounded-3xl border border-[#334155] bg-[#1E293B] p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]">
                 <PaginationBar
                   startItem={startItem}
                   endItem={endItem}
@@ -464,14 +460,14 @@ function PaginationBar({
       className={`flex flex-col gap-4 ${
         mobile
           ? ""
-          : "border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+          : "border-t border-[#334155] bg-slate-900/50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
       }`}
     >
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-slate-400">
         Showing{" "}
-        <span className="font-semibold text-slate-700">{startItem}</span> to{" "}
-        <span className="font-semibold text-slate-700">{endItem}</span> of{" "}
-        <span className="font-semibold text-slate-700">{totalItems}</span>{" "}
+        <span className="font-semibold text-slate-200">{startItem}</span> to{" "}
+        <span className="font-semibold text-slate-200">{endItem}</span> of{" "}
+        <span className="font-semibold text-slate-200">{totalItems}</span>{" "}
         grievances
       </p>
 
@@ -483,7 +479,7 @@ function PaginationBar({
             type="button"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#475569] bg-slate-800 text-slate-200 transition hover:border-cyan-400/60 hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-40"
             title="Previous page"
           >
             <ChevronLeft size={17} />
@@ -507,8 +503,8 @@ function PaginationBar({
                   onClick={() => setCurrentPage(page)}
                   className={`h-9 min-w-9 rounded-lg px-2 text-sm font-medium transition ${
                     currentPage === page
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
+                      ? "bg-cyan-400 text-slate-950 shadow-sm shadow-cyan-500/25"
+                      : "border border-[#475569] bg-slate-800 text-slate-200 hover:border-cyan-400/60 hover:bg-cyan-500/15"
                   }`}
                 >
                   {page}
@@ -525,7 +521,7 @@ function PaginationBar({
             onClick={() =>
               setCurrentPage((page) => Math.min(page + 1, totalPages))
             }
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#475569] bg-slate-800 text-slate-200 transition hover:border-cyan-400/60 hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-40"
             title="Next page"
           >
             <ChevronRight size={17} />

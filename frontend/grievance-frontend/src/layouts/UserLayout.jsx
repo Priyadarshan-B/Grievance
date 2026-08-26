@@ -5,13 +5,13 @@ import Navbar from "../components/layout/Navbar";
 
 function UserLayout() {
   return (
-    <div className="flex h-screen bg-[linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_32%,#1e3a8a_62%,#312e81_100%)] text-slate-100">
+    <div className="flex h-screen bg-[#0B0F19] text-slate-100">
       <Sidebar />
 
-      <div className="flex flex-1 flex-col">
+      <div className="min-w-0 flex flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.08),transparent_30%)]">
         <Navbar />
 
-        <main className="flex-1 overflow-auto p-4 md:p-5">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           <Outlet />
         </main>
       </div>

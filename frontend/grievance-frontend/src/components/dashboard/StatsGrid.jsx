@@ -34,73 +34,60 @@ function StatsGrid({ dashboard }) {
     },
   };
 
-  const gradients = [
-    "from-blue-600 to-cyan-500",
-    "from-yellow-500 to-orange-600",
-    "from-orange-600 to-red-500",
-    "from-green-500 to-emerald-600",
-    "from-red-600 to-pink-500",
-    "from-pink-600 to-rose-500",
-    "from-emerald-600 to-teal-600",
-    "from-purple-600 to-indigo-600",
-    "from-rose-600 to-pink-600",
-    "from-indigo-600 to-purple-700",
-  ];
-
   const stats = [
     {
       title: "Total",
       value: dashboard?.total_grievances ?? dashboard?.total ?? 0,
       icon: ClipboardList,
-      gradient: gradients[0],
+      tone: "cyan",
     },
     {
       title: "Submitted",
       value: dashboard?.submitted ?? 0,
       icon: Clock3,
-      gradient: gradients[1],
+      tone: "amber",
     },
     {
       title: "In Progress",
       value: dashboard?.in_progress ?? 0,
       icon: LoaderCircle,
-      gradient: gradients[2],
+      tone: "amber",
     },
     {
       title: "Resolved",
       value: dashboard?.resolved ?? 0,
       icon: CircleCheckBig,
-      gradient: gradients[3],
+      tone: "teal",
     },
     {
       title: "Rejected",
       value: dashboard?.rejected ?? 0,
       icon: CircleX,
-      gradient: gradients[4],
+      tone: "rose",
     },
     {
       title: "Avg Severity",
       value: dashboard?.avg_severity ?? 0,
       icon: TriangleAlert,
-      gradient: gradients[5],
+      tone: "amber",
     },
     {
       title: "Legitimacy",
       value: dashboard?.avg_legitimacy ?? 0,
       icon: ShieldCheck,
-      gradient: gradients[6],
+      tone: "teal",
     },
     {
       title: "Spam",
       value: dashboard?.avg_spam ?? 0,
       icon: ShieldAlert,
-      gradient: gradients[7],
+      tone: "cyan",
     },
     {
       title: "Abuse",
       value: dashboard?.avg_abuse ?? 0,
       icon: ShieldAlert,
-      gradient: gradients[8],
+      tone: "rose",
     },
     {
       title: "AI Confidence",
@@ -109,7 +96,7 @@ function StatsGrid({ dashboard }) {
           ? Math.round(dashboard.avg_legitimacy - dashboard.avg_spam)
           : 0,
       icon: Brain,
-      gradient: gradients[9],
+      tone: "cyan",
     },
   ];
 
@@ -126,7 +113,7 @@ function StatsGrid({ dashboard }) {
             title={stat.title}
             value={stat.value}
             icon={stat.icon}
-            color={stat.gradient}
+            tone={stat.tone}
           />
         </motion.div>
       ))}

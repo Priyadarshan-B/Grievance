@@ -22,21 +22,18 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.24),transparent_22%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.2),transparent_24%),linear-gradient(135deg,#020817_0%,#0f172a_18%,#111827_40%,#1d4ed8_68%,#312e81_100%)]">
-      <div className="absolute -top-20 left-0 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-violet-400/20 blur-3xl" />
-
-      <div className="space-y-8 p-6 relative z-10">
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100">
+      <div className="space-y-8 p-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="rounded-3xl border border-white/20 bg-white/80 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-            <h1 className="text-4xl font-black tracking-tight text-slate-900">
+          <div className="rounded-3xl border border-cyan-400/30 border-t-2 border-t-cyan-400/80 bg-gradient-to-br from-cyan-950/65 via-[#1E293B] to-violet-950/25 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <h1 className="text-4xl font-black tracking-tight text-white">
               AI Grievance Dashboard
             </h1>
-            <p className="mt-2 text-base font-semibold text-slate-700">
+            <p className="mt-2 text-base font-semibold text-slate-400">
               Overview of grievances and AI analytics
             </p>
           </div>
