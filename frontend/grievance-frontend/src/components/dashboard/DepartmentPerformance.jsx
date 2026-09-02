@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 function formatHours(hours) {
   const value = Number(hours);
@@ -61,6 +63,45 @@ function DepartmentPerformance({ data = [] }) {
     );
   }
 
+  const handleDownloadExcel = () => {
+    const exportData = data.map((department) => {
+      const percentage = Number(department.resolution_percentage || 0);
+      const performance = getPerformanceLabel(percentage);
+
+      return {
+        Department: department.department_name || "-",
+        "Department Code": department.department_code || "-",
+        Total: Number(department.total || 0),
+        Resolved: Number(department.resolved || 0),
+        Pending: Number(department.pending || 0),
+        "Resolution Rate": `${percentage.toFixed(1)}%`,
+        "Average Resolution Time": formatHours(
+          department.average_resolution_hours,
+        ),
+        Status: performance.label,
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    worksheet["!cols"] = [
+      { wch: 30 },
+      { wch: 18 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 18 },
+      { wch: 28 },
+      { wch: 20 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Department Performance");
+
+    XLSX.writeFile(workbook, "Department-Performance.xlsx");
+  };
+
   const bestDepartment = [...data].sort(
     (a, b) => Number(b.resolution_percentage) - Number(a.resolution_percentage),
   )[0];
@@ -91,8 +132,19 @@ function DepartmentPerformance({ data = [] }) {
             </p>
           </div>
 
-          <div className="rounded-full bg-slate-900 px-4 py-2 text-xs font-black tracking-wide text-white">
-            PERFORMANCE ANALYTICS
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadExcel}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-black tracking-wide text-white transition hover:bg-emerald-600"
+            >
+              <Download size={15} />
+              Download Excel
+            </button>
+
+            <div className="rounded-full bg-slate-900 px-4 py-2 text-xs font-black tracking-wide text-white">
+              PERFORMANCE ANALYTICS
+            </div>
           </div>
         </div>
       </div>
@@ -100,7 +152,7 @@ function DepartmentPerformance({ data = [] }) {
       {/* Highlights */}
       <div className="grid gap-5 md:grid-cols-2">
         {/* Best resolution */}
-          <div className="rounded-3xl border border-[#334155] bg-[#1E293B] p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+        <div className="rounded-3xl border border-[#334155] bg-[#1E293B] p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
           <p className="text-xs font-black uppercase tracking-widest text-slate-400">
             Best Resolution Rate
           </p>

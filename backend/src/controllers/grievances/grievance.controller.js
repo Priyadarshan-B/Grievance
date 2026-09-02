@@ -12,6 +12,10 @@ import {
   rejectGrievanceService,
   changeDepartmentService,
 } from "../../services/grievances/grievance.service.js";
+import {
+  generateGrievanceReport,
+  generateAllGrievancesReport,
+} from "../../services/reports/grievanceReport.service.js";
 
 import { addHistory } from "../../services/history/history.service.js";
 
@@ -253,6 +257,73 @@ export const changeDepartment = async (req, res, next) => {
       message: "Department updated successfully.",
       data: grievance,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const downloadGrievanceReport = async (req, res, next) => {
+  try {
+    const { workbook, grievanceNo } = await generateGrievanceReport(
+      req.params.id,
+    );
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${grievanceNo}-Report.xlsx"`,
+    );
+
+    await workbook.xlsx.write(res);
+
+    res.end();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const downloadAllGrievancesReport = async (req, res, next) => {
+  try {
+    const {
+      search = "",
+      department = "",
+      status = "",
+      priority = "",
+      sentiment = "",
+    } = req.query;
+
+    const filters = {
+      search,
+      department,
+      status,
+      priority,
+      sentiment,
+    };
+
+    const { workbook, count } = await generateAllGrievancesReport(
+      req.user,
+      filters,
+    );
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="Grievances-Report.xlsx"',
+    );
+
+    res.setHeader("X-Report-Count", count);
+
+    await workbook.xlsx.write(res);
+
+    res.end();
   } catch (err) {
     next(err);
   }

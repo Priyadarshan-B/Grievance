@@ -1,5 +1,3 @@
-// File: frontend/src/pages/admin/GrievanceDetails.jsx
-
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -30,6 +28,7 @@ import HistoryTimeline from "../../components/grievance/HistoryTimeline";
 import {
   changeDepartment,
   getDepartments,
+  downloadGrievanceReport,
 } from "../../services/grievances/grievance.service";
 
 function GrievanceDetails() {
@@ -52,6 +51,7 @@ function GrievanceDetails() {
   const [departmentChangeReason, setDepartmentChangeReason] = useState("");
 
   const [departmentLoading, setDepartmentLoading] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
     const loadDepartments = async () => {
@@ -195,6 +195,21 @@ function GrievanceDetails() {
     }
   };
 
+  const handleDownloadReport = async () => {
+    try {
+      setReportLoading(true);
+
+      await downloadGrievanceReport(id);
+    } catch (err) {
+      console.error("Failed to download grievance report:", err);
+      alert(
+        err.response?.data?.message || "Failed to generate grievance report.",
+      );
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
   const getPriorityStyle = (priority) => {
     switch (priority?.toLowerCase()) {
       case "critical":
@@ -301,16 +316,35 @@ function GrievanceDetails() {
                 </p>
               </div>
             </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                disabled={reportLoading}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-[1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {reportLoading ? (
+                  <RefreshCw size={16} className="animate-spin" />
+                ) : (
+                  <FileText size={16} />
+                )}
 
-            <button
-              type="button"
-              onClick={refresh}
-              disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:translate-y-[-1px] hover:shadow-xl disabled:opacity-50"
-            >
-              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-              Refresh
-            </button>
+                {reportLoading ? "Generating..." : "Download Excel"}
+              </button>
+
+              <button
+                type="button"
+                onClick={refresh}
+                disabled={loading}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-[1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <RefreshCw
+                  size={16}
+                  className={loading ? "animate-spin" : ""}
+                />
+                Refresh
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -425,9 +459,7 @@ function GrievanceDetails() {
                   </div>
 
                   <div>
-                    <h2 className="font-semibold text-white">
-                      AI Analysis
-                    </h2>
+                    <h2 className="font-semibold text-white">AI Analysis</h2>
 
                     <p className="text-sm text-blue-100/80">
                       Automated grievance assessment
@@ -554,7 +586,7 @@ function GrievanceDetails() {
                 icon={<ShieldCheck size={19} />}
                 title="User Trust"
                 subtitle="AI-assisted trust indicators"
-                    dark
+                dark
               />
 
               <div className="mt-5 grid gap-4 sm:grid-cols-3">
@@ -803,12 +835,16 @@ function SectionHeading({ icon, title, subtitle, dark = false }) {
       </div>
 
       <div>
-        <h2 className={`font-semibold ${dark ? "text-white" : "text-slate-900"}`}>
+        <h2
+          className={`font-semibold ${dark ? "text-white" : "text-slate-900"}`}
+        >
           {title}
         </h2>
 
         {subtitle && (
-          <p className={`text-sm ${dark ? "text-blue-100/80" : "text-slate-500"}`}>
+          <p
+            className={`text-sm ${dark ? "text-blue-100/80" : "text-slate-500"}`}
+          >
             {subtitle}
           </p>
         )}
@@ -837,7 +873,11 @@ function ScoreCard({ label, value, valueClass = "text-slate-900" }) {
         {label}
       </p>
 
-      <p className={`mt-2 text-2xl font-bold ${valueClass === "text-slate-900" ? "text-white" : valueClass}`}>{value}</p>
+      <p
+        className={`mt-2 text-2xl font-bold ${valueClass === "text-slate-900" ? "text-white" : valueClass}`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

@@ -1,10 +1,18 @@
 import { useMemo, useState } from "react";
-import { Eye, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Eye,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  RefreshCw,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import Loader from "../../components/common/Loader";
 import Badge from "../../components/common/Badge";
 import useDepartmentGrievances from "../../hooks/useDepartmentGrievances";
+import { downloadAllGrievancesReport } from "../../services/grievances/grievance.service";
 
 function DepartmentGrievances() {
   const { grievances, loading, error } = useDepartmentGrievances();
@@ -16,6 +24,7 @@ function DepartmentGrievances() {
   const [sentiment, setSentiment] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const ITEMS_PER_PAGE = 10;
 
@@ -89,6 +98,28 @@ function DepartmentGrievances() {
     filtered.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
 
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, filtered.length);
+
+  const handleDownloadReport = async () => {
+    try {
+      setReportLoading(true);
+
+      await downloadAllGrievancesReport({
+        search,
+        department,
+        status,
+        priority,
+        sentiment,
+      });
+    } catch (err) {
+      console.error("Failed to download grievances report:", err);
+
+      alert(
+        err.response?.data?.message || "Failed to generate grievances report.",
+      );
+    } finally {
+      setReportLoading(false);
+    }
+  };
 
   // Loading / Error
   if (loading) {
@@ -192,6 +223,20 @@ function DepartmentGrievances() {
             {filtered.length}{" "}
             {filtered.length === 1 ? "Grievance" : "Grievances"}
           </span>
+          <button
+            type="button"
+            onClick={handleDownloadReport}
+            disabled={reportLoading}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:-translate-y-[1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {reportLoading ? (
+              <RefreshCw size={17} className="animate-spin" />
+            ) : (
+              <Download size={17} />
+            )}
+
+            {reportLoading ? "Generating..." : "Download Excel"}
+          </button>
         </div>
 
         {/* Filters */}
@@ -433,7 +478,10 @@ function DepartmentGrievances() {
 
                       {/* Status */}
                       <td className="whitespace-nowrap px-4 py-4">
-                        <div className="whitespace-nowrap" title={g.status ?? "—"}>
+                        <div
+                          className="whitespace-nowrap"
+                          title={g.status ?? "—"}
+                        >
                           <Badge status={g.status} />
                         </div>
                       </td>

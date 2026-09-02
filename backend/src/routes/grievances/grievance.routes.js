@@ -12,7 +12,9 @@ import {
   reviewGrievance,
   resolveGrievance,
   rejectGrievance,
-  changeDepartment
+  changeDepartment,
+  downloadGrievanceReport,
+  downloadAllGrievancesReport,
 } from "../../controllers/grievances/grievance.controller.js";
 
 import {
@@ -55,6 +57,20 @@ router.get(
   authenticate,
   authorize("dept_admin", "super_admin"),
   getGrievances,
+);
+
+router.get(
+  "/report",
+  authenticate,
+  authorize("dept_admin", "super_admin"),
+  downloadAllGrievancesReport,
+);
+
+router.get(
+  "/:id/report",
+  authenticate,
+  authorize("user", "dept_admin", "super_admin"),
+  downloadGrievanceReport,
 );
 
 // Get Grievance By ID
@@ -116,5 +132,7 @@ router.put(
 
 // Delete Grievance
 router.delete("/:id", authenticate, authorize("super_admin"), deleteGrievance);
+
+
 
 export default router;
