@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import useAdminDashboard from "../../hooks/useAdminDashboard";
 
+import Loader from "../../components/common/Loader";
 import StatsGrid from "../../components/dashboard/StatsGrid";
 import StatusPieChart from "../../components/dashboard/StatusPieChart";
 import MonthlyChart from "../../components/dashboard/MonthlyChart";
@@ -15,8 +16,8 @@ function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        Loading Dashboard...
+      <div className="flex min-h-[70vh] items-center justify-center bg-[#0B0F19]">
+        <Loader />
       </div>
     );
   }

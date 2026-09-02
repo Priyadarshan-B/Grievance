@@ -34,7 +34,7 @@ function StatsGrid({ dashboard }) {
     },
   };
 
-  const stats = [
+  const leftStats = [
     {
       title: "Total",
       value: dashboard?.total_grievances ?? dashboard?.total ?? 0,
@@ -45,7 +45,7 @@ function StatsGrid({ dashboard }) {
       title: "Submitted",
       value: dashboard?.submitted ?? 0,
       icon: Clock3,
-      tone: "amber",
+      tone: "violet",
     },
     {
       title: "In Progress",
@@ -65,29 +65,32 @@ function StatsGrid({ dashboard }) {
       icon: CircleX,
       tone: "rose",
     },
+  ];
+
+  const rightStats = [
     {
       title: "Avg Severity",
       value: dashboard?.avg_severity ?? 0,
       icon: TriangleAlert,
-      tone: "amber",
+      tone: "cyan",
     },
     {
       title: "Legitimacy",
       value: dashboard?.avg_legitimacy ?? 0,
       icon: ShieldCheck,
-      tone: "teal",
+      tone: "violet",
     },
     {
       title: "Spam",
       value: dashboard?.avg_spam ?? 0,
       icon: ShieldAlert,
-      tone: "cyan",
+      tone: "amber",
     },
     {
       title: "Abuse",
       value: dashboard?.avg_abuse ?? 0,
       icon: ShieldAlert,
-      tone: "rose",
+      tone: "teal",
     },
     {
       title: "AI Confidence",
@@ -96,27 +99,74 @@ function StatsGrid({ dashboard }) {
           ? Math.round(dashboard.avg_legitimacy - dashboard.avg_spam)
           : 0,
       icon: Brain,
-      tone: "cyan",
+      tone: "rose",
     },
   ];
 
+  const formatMetricValue = (value) => {
+    const numeric = Number(value ?? 0);
+
+    if (!Number.isFinite(numeric)) return "0";
+
+    return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(2);
+  };
+
   return (
     <motion.div
-      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+      className="grid gap-6 xl:grid-cols-[1.05fr_1.15fr]"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {stats.map((stat, index) => (
-        <motion.div key={index} variants={itemVariants}>
-          <StatCard
-            title={stat.title}
-            value={stat.value}
-            icon={stat.icon}
-            tone={stat.tone}
-          />
-        </motion.div>
-      ))}
+      <div className="space-y-4">
+        {leftStats.map((stat, index) => (
+          <motion.div key={index} variants={itemVariants}>
+            <StatCard
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              tone={stat.tone}
+              compact
+            />
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="flex flex-col rounded-[26px] border border-cyan-400/20 bg-[radial-gradient(circle_at_top,_rgba(30,64,175,0.22),_rgba(15,23,42,0.95)_55%)] p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+          <div className="flex flex-col justify-center gap-6 h-full">
+          {rightStats.map((stat) => {
+            const numericValue = Number(stat.value ?? 0);
+            const percentage = Math.min(Math.max(numericValue, 0), 100);
+
+            // Get color based on tone
+            const colorMap = {
+              cyan: "from-blue-400 to-blue-300",
+              violet: "from-purple-400 to-purple-300",
+              amber: "from-amber-400 to-amber-300",
+              teal: "from-emerald-400 to-emerald-300",
+              rose: "from-red-400 to-red-300",
+            };
+
+            return (
+                <div key={stat.title} className="space-y-2">
+                  <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm font-bold text-blue-300">{stat.title}</span>
+                    <span className="text-right text-lg font-bold text-blue-300">
+                    {formatMetricValue(stat.value)}
+                  </span>
+                </div>
+
+                <div className="h-4 overflow-hidden rounded-full border border-cyan-400/20 bg-slate-900/80">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${colorMap[stat.tone] || colorMap.cyan} shadow-[0_0_14px_rgba(52,211,153,0.65)]`}
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </motion.div>
   );
 }

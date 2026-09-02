@@ -177,7 +177,7 @@ function Dashboard() {
                 title="Submitted"
                 value={submitted}
                 icon={AlertCircle}
-                  tone="cyan"
+                  tone="violet"
               />
             </motion.div>
 

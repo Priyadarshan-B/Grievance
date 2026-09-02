@@ -164,19 +164,19 @@ function DepartmentPerformance({ data = [] }) {
           <table className="w-full min-w-[900px] table-fixed">
             <thead>
               <tr className="border-b border-[#334155] bg-slate-900">
-                <th className="w-[24%] px-5 py-4 text-left text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[18%] px-3 py-4 text-left text-xs font-black uppercase tracking-wider text-white">
                   Department
                 </th>
 
-                <th className="w-[10%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[9%] px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
                   Total
                 </th>
 
-                <th className="w-[12%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[11%] px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
                   Resolved
                 </th>
 
-                <th className="w-[12%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[11%] px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
                   Pending
                 </th>
 
@@ -184,23 +184,25 @@ function DepartmentPerformance({ data = [] }) {
                   Resolution
                 </th>
 
-                <th className="w-[12%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[11%] px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
                   Avg. Time
                 </th>
 
-                <th className="w-[10%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
+                <th className="w-[20%] px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-white">
                   Status
                 </th>
               </tr>
             </thead>
 
             <tbody>
-              {data.map((department, index) => {
+              {data.map((department) => {
                 const percentage = Number(
                   department.resolution_percentage || 0,
                 );
 
                 const performance = getPerformanceLabel(percentage);
+                const displayPercentage =
+                  percentage < 40 ? 100 : Math.min(percentage, 100);
 
                 return (
                   <tr
@@ -209,26 +211,20 @@ function DepartmentPerformance({ data = [] }) {
                   >
                     {/* Department */}
                     <td className="px-5 py-4">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-black text-white">
-                          {index + 1}
-                        </div>
+                      <div className="min-w-0">
+                        <p
+                          className="truncate font-bold text-white"
+                          title={department.department_name}
+                        >
+                          {department.department_name}
+                        </p>
 
-                        <div className="min-w-0">
-                          <p
-                            className="truncate font-bold text-white"
-                            title={department.department_name}
-                          >
-                            {department.department_name}
-                          </p>
-
-                          <p
-                            className="truncate text-xs font-semibold text-slate-400"
-                            title={department.department_code}
-                          >
-                            {department.department_code}
-                          </p>
-                        </div>
+                        <p
+                          className="truncate text-xs font-semibold text-slate-400"
+                          title={department.department_code}
+                        >
+                          {department.department_code}
+                        </p>
                       </div>
                     </td>
 
@@ -254,7 +250,7 @@ function DepartmentPerformance({ data = [] }) {
                           <div
                             className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                             style={{
-                              width: `${Math.min(percentage, 100)}%`,
+                              width: `${displayPercentage}%`,
                             }}
                           />
                         </div>

@@ -252,7 +252,7 @@ function GrievanceDetails() {
                   <SimpleInfo
                     label="Priority"
                     value={
-                      <span className="capitalize text-slate-100">
+                      <span className="capitalize text-slate-800">
                         {grievanceData.priority || "—"}
                       </span>
                     }
@@ -260,7 +260,7 @@ function GrievanceDetails() {
 
                   <SimpleInfo
                     label="Sentiment"
-                    value={<span className="text-slate-100">{grievanceData.sentiment || "—"}</span>}
+                    value={<span className="text-slate-800">{grievanceData.sentiment || "—"}</span>}
                   />
                 </div>
               </div>
@@ -316,13 +316,13 @@ function GrievanceDetails() {
           </div>
 
           <aside className="space-y-6">
-            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+            <section className="rounded-3xl border border-slate-700/70 bg-slate-900/90 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.8)] backdrop-blur-xl">
               <h2 className="font-semibold text-white">Current Status</h2>
 
-              <div className="mt-4 rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-center">
+              <div className="mt-4 rounded-2xl border border-slate-700/80 bg-slate-950/80 p-5 text-center">
                 <Badge status={grievanceData.status} />
 
-                <p className="mt-3 text-sm leading-6 text-slate-300">
+                <p className="mt-3 text-sm leading-6 text-slate-200">
                   {getStatusMessage(grievanceData.status)}
                 </p>
               </div>
@@ -346,7 +346,7 @@ function GrievanceDetails() {
               )}
             </section>
 
-            <section className="rounded-3xl border border-white/15 bg-slate-950/40 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+            <section className="rounded-3xl border border-slate-700/70 bg-slate-900/90 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.8)] backdrop-blur-xl">
               <h2 className="font-semibold text-white">Grievance Information</h2>
 
               <div className="mt-5 space-y-4">
@@ -363,7 +363,7 @@ function GrievanceDetails() {
                 <DetailRow
                   label="Priority"
                   value={
-                    <span className="capitalize">
+                    <span className="capitalize text-slate-100">
                       {grievanceData.priority || "—"}
                     </span>
                   }
@@ -389,16 +389,16 @@ function GrievanceDetails() {
 function QuickInfo({ icon, label, value }) {
   return (
     <div className="flex items-center gap-3 px-6 py-4">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
         {icon}
       </div>
 
       <div className="min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-wide text-white/80">
           {label}
         </p>
 
-        <div className="mt-1 truncate text-sm font-semibold text-slate-700">
+        <div className="mt-1 truncate text-sm font-semibold text-white">
           {value}
         </div>
       </div>
@@ -409,21 +409,21 @@ function QuickInfo({ icon, label, value }) {
 function SimpleInfo({ label, value }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-700">
         {label}
       </p>
 
-      <div className="mt-2 text-sm font-semibold text-slate-700">{value}</div>
+      <div className="mt-2 text-sm font-semibold text-slate-900">{value}</div>
     </div>
   );
 }
 
 function DetailRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-      <span className="text-sm text-slate-500">{label}</span>
+    <div className="flex items-center justify-between gap-4 border-b border-slate-700/70 pb-3 last:border-0 last:pb-0">
+      <span className="text-sm font-medium text-white/80">{label}</span>
 
-      <span className="text-right text-sm font-semibold text-slate-700">
+      <span className="text-right text-sm font-bold text-white">
         {value}
       </span>
     </div>

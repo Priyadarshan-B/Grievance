@@ -11,7 +11,7 @@ function UserLayout() {
       <div className="min-w-0 flex flex-1 flex-col bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.08),transparent_30%)]">
         <Navbar />
 
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-3 md:p-4">
           <Outlet />
         </main>
       </div>

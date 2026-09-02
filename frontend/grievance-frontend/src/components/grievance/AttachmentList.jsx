@@ -3,7 +3,7 @@ import AttachmentItem from "./AttachmentItem";
 const AttachmentList = ({ attachments }) => {
   if (!attachments?.length) {
     return (
-      <div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
+      <div className="rounded-lg border border-dashed p-8 text-center text-slate-600">
         No attachments uploaded.
       </div>
     );

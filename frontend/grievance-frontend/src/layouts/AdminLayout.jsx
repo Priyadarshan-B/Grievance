@@ -10,7 +10,7 @@ function AdminLayout() {
       <div className="min-w-0 flex flex-1 flex-col overflow-hidden bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.08),transparent_30%)]">
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4">
           <Outlet />
         </main>
       </div>

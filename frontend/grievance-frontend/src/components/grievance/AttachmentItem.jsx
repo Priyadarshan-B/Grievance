@@ -49,16 +49,16 @@ const AttachmentItem = ({ attachment }) => {
         {getFileIcon(attachment.file_type)}
 
         <div>
-          <p className="font-medium text-slate-800">{attachment.file_name}</p>
+          <p className="font-medium text-slate-900">{attachment.file_name}</p>
 
-          <p className="text-sm text-slate-500">{attachment.file_type}</p>
+          <p className="text-sm text-slate-600">{attachment.file_type}</p>
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             {formatFileSize(attachment.file_size)}
           </p>
 
           {attachment.uploaded_at && (
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Uploaded: {new Date(attachment.uploaded_at).toLocaleString()}
             </p>
           )}

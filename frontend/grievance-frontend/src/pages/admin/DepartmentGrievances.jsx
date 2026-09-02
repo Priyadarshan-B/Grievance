@@ -474,7 +474,7 @@ function DepartmentGrievances() {
                     onClick={() =>
                       setCurrentPage((page) => Math.max(page - 1, 1))
                     }
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-400/60 bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
                     title="Previous page"
                   >
                     <ChevronLeft size={17} />
@@ -496,7 +496,7 @@ function DepartmentGrievances() {
                         className={`h-9 min-w-9 shrink-0 rounded-lg px-2 text-sm font-medium transition ${
                           currentPage === page
                             ? "bg-blue-600 text-white shadow-sm"
-                            : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
+                            : "border border-blue-400/60 bg-blue-600 text-white hover:bg-blue-700"
                         }`}
                       >
                         {page}
@@ -510,7 +510,7 @@ function DepartmentGrievances() {
                     onClick={() =>
                       setCurrentPage((page) => Math.min(page + 1, totalPages))
                     }
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-400/60 bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
                     title="Next page"
                   >
                     <ChevronRight size={17} />
